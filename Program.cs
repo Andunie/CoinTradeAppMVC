@@ -125,8 +125,6 @@ if (!app.Environment.IsDevelopment())
 // Dil Desteði kodlarý
 var supportedCultures = new[] { "en-US", "tr-TR"};
 
-
-
 var localizationOptions = new RequestLocalizationOptions()
 	.SetDefaultCulture(supportedCultures[0])
 	.AddSupportedCultures(supportedCultures)

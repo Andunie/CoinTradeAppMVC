@@ -693,20 +693,28 @@
                         if ($cell.hasClass("completed")) {
                             return;
                         }
-                        var entryPrice = parseFloat($cell.data("entry").replace(",", "."));
-                        var originalAmount = parseFloat($cell.attr("data-original").replace(",", "."));
-                        var borrowAmount = parseFloat($cell.attr("data-borrow").replace(",", "."));
-                        var isLong = $cell.data("islong").toString().toLowerCase() === "true";
-                        var totalPosition = originalAmount + borrowAmount;
+                        var entryPrice = parseFloat($cell.data("entry").replace(",", "."));             // 2624
+                        var originalAmount = parseFloat($cell.attr("data-original").replace(",", ".")); // 0.1
+                        var borrowAmount = parseFloat($cell.attr("data-borrow").replace(",", "."));     // 0.1
+                        var isLong = $cell.data("islong").toString().toLowerCase() === "true";          // true
+                        var totalPosition = originalAmount + borrowAmount;                              // 0.2
+                        console.log("total Position: " + totalPosition);
                         var profitLoss, coinAmount;
 
+
                         if (isLong) {
-                            coinAmount = totalPosition / entryPrice;
+                            // coinAmount = 0.2 / 2624
+                            coinAmount = totalPosition;
                             profitLoss = (currentPrice - entryPrice) * coinAmount;
+                            console.log("coinAmount: " + coinAmount);
                         } else {
+                            // coinAmount = 0.2 
                             coinAmount = totalPosition;
                             profitLoss = (entryPrice - currentPrice) * coinAmount;
                         }
+
+                        console.log("Current Price: " + currentPrice);
+                        console.log("Profit Loss: " + profitLoss);
 
                         $cell.text(profitLoss.toFixed(2));
                         $cell.css("color", profitLoss >= 0 ? "green" : "red");
