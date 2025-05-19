@@ -24,7 +24,7 @@ CoinTradeAppMVC allows users to:
 | Layer        | Technologies & Tools                                  |
 |--------------|--------------------------------------------------------|
 | Backend      | ASP.NET Core MVC (.NET 8.0), Entity Framework Core     |
-| Frontend     | Bootstrap 4.5, Chart.js, JavaScript                    |
+| Frontend     | CSS, Bootstrap 5, Chart.js, JavaScript, Chart.JS       |
 | Realtime     | SignalR                                                |
 | Authentication | ASP.NET Core Identity + Email confirmation          |
 | Pattern Detection | Python (FastAPI) + TA-Lib                        |
