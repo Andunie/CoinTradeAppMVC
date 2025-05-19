@@ -1,0 +1,359 @@
+﻿@using CoinTradeAppMVC.ViewModels
+@using CoinTradeAppMVC.ApiModels
+@{
+	var warningMessage = TempData["WarningMessage"];
+	var successMessage = TempData["SuccessMessage_"];
+	var patternsResult = ViewBag.Patterns;
+}
+
+@model List<KlineViewModel>
+
+<style>
+	body {
+		font-family: "Roboto", sans-serif;
+		background: #f5f5f5;
+		color: #333;
+	}
+
+	input[type=number]::-webkit-inner-spin-button,
+	input[type=number]::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	.rounded-card {
+		border-radius: 12px;
+	}
+
+	.btn-login {
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		border: none;
+		border-radius: 8px;
+		color: white !important;
+		padding: 0.75rem 2rem;
+		font-weight: 600;
+		font-family: 'Inter', sans-serif;
+		letter-spacing: 0.5px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		width: auto;
+		min-width: 200px;
+		height: 48px;
+		position: relative;
+		overflow: hidden;
+	}
+
+		.btn-login:hover {
+			box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+			background: linear-gradient(45deg, #0d94d4, #585be0);
+		}
+
+		.btn-login::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.15), transparent );
+			transition: 0.5s;
+		}
+
+		.btn-login .spinner { /* Keep this as is, it's a child of .btn-login */
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			border: 2px solid transparent;
+			border-top-color: #fff;
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+			display: none; /* Initially hidden */
+		}
+
+		.btn-login.loading .button-text { /* Target .loading class on .btn-login */
+			visibility: hidden; /* Hide text when loading */
+		}
+
+		.btn-login.loading .spinner { /* Target .loading class on .btn-login */
+			display: block; /* Show spinner when loading */
+		}
+
+	.inputForm {
+		border: 2px solid #ecedec;
+		border-radius: 12px;
+		height: 40px;
+		width: 380px;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		transition: 0.2s ease-in-out;
+	}
+
+		.inputForm:focus-within {
+			border: 2px solid #ecedec;
+		}
+
+	.readonly-input {
+		border: 2px solid #f5f5f5;
+		border-radius: 12px;
+		height: 40px;
+		width: 380px;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		transition: 0.2s ease-in-out;
+		pointer-events: none;
+	}
+
+	#tv_chart_container {
+		width: 100%;
+		height: 600px;
+	}
+
+
+	@@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+</style>
+
+
+<div class="row">
+	<div class="current-price">
+		<b>@ViewBag.Symbol <span class="coin-update" data-price="@ViewBag.Symbol">@Localizer["CurrentPrice"]</span></b>
+	</div>
+
+	<div id="candlestickChart" class="col-md-8"></div>
+
+	<div class="col-md-4 mt-5">
+		<div class="card rounded-card">
+			<div class="card-body">
+				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+				</div>
+
+				@if (successMessage != null)
+				{
+					<div class="alert alert-success" role="alert">
+						@successMessage
+					</div>
+				}
+				@if (warningMessage != null)
+				{
+					<div class="alert alert-danger" role="alert">
+						@warningMessage
+					</div>
+				}
+
+				<form asp-controller="Member" asp-action="BuyCoin" method="post">
+					<input type="hidden" name="symbol" value="@ViewBag.Symbol" />
+					<input type="hidden" id="coinPrice" value="@Model?.LastOrDefault()?.ClosePrice" />
+					<div class="mb-1">
+						<label for="amount" class="form-label">@Localizer["Amount"]</label>
+						<input type="number" id="amount" name="amount" class="inputForm" placeholder="@Localizer["YouBuy"] @ViewBag.Symbol" step="0.000001" min="0.000001" required />
+					</div>
+					<div class="mb-3 mt-1">
+						<label for="total" class="form-label">@Localizer["Total (in USD)"]</label>
+						<input type="text" id="total" class="readonly-input" placeholder="@Localizer["YouSpend$USD"]" />
+					</div>
+					<button type="submit" id="buyButton" class="btn-login w-100">
+						<span class="button-text">@Localizer["Buy"] @ViewBag.Symbol</span>
+						<span class="spinner"></span>
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/hollowcandlestick.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script>
+	var klineData = @Html.Raw(Json.Serialize(Model));
+	var patternsData = @Html.Raw(patternsResult != null ? patternsResult : "{}");
+
+	console.log("Kline Data:", klineData);
+	console.log("Patterns Data:", patternsData);
+
+	// patternsData bir string olarak geliyor, JSON'a çeviriyoruz
+	var parsedPatterns = typeof patternsData === "string" ? JSON.parse(patternsData) : patternsData;
+
+	Highcharts.stockChart('candlestickChart', {
+		chart: { height: 700 },
+		rangeSelector: { selected: 1 },
+		navigator: { series: { color: Highcharts.getOptions().colors[0] } },
+		title: { text: 'Candlestick Data' },
+		plotOptions: {
+			series: { allowPointSelect: false, stickyTracking: false },
+			candlestick: { tooltip: { valueDecimals: 2, shared: false } },
+			scatter: { zIndex: 1, enableMouseTracking: true, stickyTracking: false }
+		},
+		series: [
+			{
+				type: 'candlestick',
+				name: '@ViewBag.Symbol',
+				color: '#ff5e00',
+				lineColor: '#ff5e00',
+				upColor: '#35bd00',
+				upLineColor: '#35bd00',
+				data: klineData.map(k => [
+					new Date(k.openTime).getTime(),
+					parseFloat(k.openPrice),
+					parseFloat(k.highPrice),
+					parseFloat(k.lowPrice),
+					parseFloat(k.closePrice)
+				]),
+				tooltip: {
+					valueDecimals: 2,
+					pointFormat: '<span style="color:{series.color}">{series.name}</span>: ' +
+						'<b>Open: {point.open:.2f}</b>, High: {point.high:.2f}, ' +
+						'Low: {point.low:.2f}, Close: {point.close:.2f}<br/>'
+				}
+			},
+			{
+				type: 'scatter',
+				name: 'Hammer Patterns',
+				color: '#FFD700',
+				marker: { symbol: 'circle', radius: 5 },
+				data: parsedPatterns.patterns && parsedPatterns.patterns.Hammer
+					? parsedPatterns.patterns.Hammer.map(h => [
+						new Date(h.OpenTime).getTime(),
+						parseFloat(h.LowPrice)
+					])
+					: [],
+				tooltip: {
+					pointFormat: 'Hammer at {point.x:%Y-%m-%d %H:%M}: Low: {point.y:.2f}',
+					outside: true,
+					shadow: false
+				}
+			},
+			{
+				type: 'scatter',
+				name: 'Shooting Star Patterns',
+				color: '#FF4500',
+				marker: { symbol: 'triangle-down', radius: 5 },
+				data: parsedPatterns.patterns && parsedPatterns.patterns.ShootingStar
+					? parsedPatterns.patterns.ShootingStar.map(s => [
+						new Date(s.OpenTime).getTime(),
+						parseFloat(s.HighPrice)
+					])
+					: [],
+				tooltip: {
+					pointFormat: 'Shooting Star at {point.x:%Y-%m-%d %H:%M}: High: {point.y:.2f}',
+					outside: true,
+					shadow: false
+				}
+			},
+			{
+				type: 'scatter',
+				name: 'Doji Patterns',
+				color: '#00CED1',
+				marker: { symbol: 'diamond', radius: 5 },
+				data: parsedPatterns.patterns && parsedPatterns.patterns.Doji
+					? parsedPatterns.patterns.Doji.map(d => [
+						new Date(d.OpenTime).getTime(),
+						parseFloat(d.ClosePrice)
+					])
+					: [],
+				tooltip: {
+					pointFormatter: function () {
+						return 'Doji at ' +
+							Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) +
+							': Close: ' + this.y.toFixed(2);
+					},
+					outside: true,
+					shadow: false
+				}
+			},
+			{
+				type: 'scatter',
+				name: 'Bullish Engulfing Patterns',
+				color: '#228B22',
+				marker: { symbol: 'triangle', radius: 5 },
+				data: parsedPatterns.patterns && parsedPatterns.patterns.BullishEngulfing
+					? parsedPatterns.patterns.BullishEngulfing.map(be => [
+						new Date(be.OpenTime).getTime(),
+						parseFloat(be.LowPrice)
+					])
+					: [],
+				tooltip: {
+					pointFormat: 'Bullish Engulfing at {point.x:%Y-%m-%d %H:%M}: Low: {point.y:.2f}',
+					outside: true,
+					shadow: false
+				}
+			},
+			{
+				type: 'scatter',
+				name: 'Bullish Harami Patterns',
+				color: '#db0d0d',
+				marker: { symbol: 'square', radius: 3 },
+				data: parsedPatterns.patterns && parsedPatterns.patterns.BullishHarami
+					? parsedPatterns.patterns.BullishHarami.map(bh => [
+						new Date(bh.OpenTime).getTime(),
+						parseFloat(bh.ClosePrice)
+					])
+					: [],
+				tooltip: {
+					pointFormat: 'Bullish Harami at {point.x:%Y-%m-%d %H:%M}: Close: {point.y:.2f}',
+					outside: true,
+					shadow: false
+				}
+			}
+		]
+	});
+
+	document.getElementById("amount").addEventListener("input", function () {
+		var amount = parseFloat(this.value) || 0;
+		var coinPrice = parseFloat(document.getElementById("coinPrice").value.replace(',', '.')) || 0;
+		var total = amount * coinPrice;
+		document.getElementById("total").value = total.toFixed(2);
+	});
+
+	document.addEventListener('DOMContentLoaded', function () {
+		const loadingButton = document.getElementById('buyButton');
+		loadingButton.addEventListener('click', function () {
+			loadingButton.classList.add('loading');
+			setTimeout(function () {
+				loadingButton.classList.remove('loading');
+			}, 1000);
+		});
+	});
+</script>
+
+
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+@section Scripts
+{
+	<script type="text/javascript">
+		$(document).ready(() => {
+			var connection = new signalR.HubConnectionBuilder()
+				.withUrl("https://localhost:7288/coinhub").build();
+
+			connection.start().catch((err) => console.log(err));
+
+			connection.on("ReceiveCoinUpdate", (currentPrice, symbol) => {
+				const priceCell = $(`.coin-update[data-price="${symbol}"]`);
+				priceCell.text(parseFloat(currentPrice).toLocaleString("en-US", { style: "currency", currency: "USD" }));
+
+				priceCell.RemoveClass("text-success text-danger");
+
+			});
+
+			setInterval(() => {
+				const symbol = $(".coin-update").data("price");
+				if (symbol) {
+					connection.invoke("SendCurrentPrice", symbol);
+				}
+			}, 2000); // 2 saniyede bir güncelle
+		});
+
+	</script>
+}

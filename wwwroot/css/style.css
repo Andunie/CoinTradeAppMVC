@@ -1,0 +1,19 @@
+﻿.highlight {
+    animation: highlightEffect 1.5s ease-out;
+}
+
+@keyframes highlightEffect {
+    0% {
+        background-color: #ffeb3b; /* Sarı renk */
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

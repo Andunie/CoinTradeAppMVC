@@ -1,0 +1,493 @@
+﻿@using CoinTradeAppMVC.ViewModels
+@{
+    ViewData["Title"] = "User Portfolio";
+    var warningMessage = TempData["Warning_Message"];
+    var successMessage = TempData["Success_Message_"];
+}
+
+<title>My Portfolio</title>
+
+@model IEnumerable<CoinTradeAppMVC.ViewModels.UserPortfolioViewModel>
+
+@{
+    var userBalance = ViewBag.UserBalance; // Liquid balance
+    var totalCoinValue = Model.Sum(item => item.TotalValue);
+    // Toplam varlık (net worth)
+    var totalAssets = userBalance + totalCoinValue;
+}
+
+<style>
+    /* General Styles */
+    body {
+        font-family: "Roboto", sans-serif;
+        background: #f5f5f5;
+        color: #333;
+    }
+
+    .container {
+        padding-top: 2rem;
+    }
+
+    /* Balance Card */
+    .balance-card {
+        background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        color: white;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .balance-card i {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.2;
+            font-size: 4rem;
+        }
+
+    /* Assets Card */
+    .assets-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* Portfolio Table */
+    .portfolio-table {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e9ecef;
+    }
+
+        .portfolio-table thead {
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .portfolio-table th {
+            font-weight: 600;
+            color: #495057;
+            padding: 1rem 1.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .portfolio-table td {
+            padding: 1.2rem 1.5rem;
+            color: #212529;
+            font-weight: 400;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .portfolio-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .portfolio-table tr:hover td {
+            background: #f8f9fa;
+        }
+
+    /* Buttons */
+    .btn-buy {
+        background: #10B981;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
+    }
+
+        .btn-buy:hover {
+            background: #059669;
+        }
+
+    .btn-sell {
+        background: #EF4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
+    }
+
+        .btn-sell:hover {
+            background: #DC2626;
+        }
+
+    /* Profit/Loss Badge */
+    .profit-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .positive {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    .negative {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    /* Modals */
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
+    }
+
+    /* Inputs */
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+</style>
+
+<div class="container">
+    <!-- Üst Satır: Total Balance & Asset Allocation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-md-row gap-4">
+                <div class="balance-card flex-fill">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase opacity-75 mb-1">@Localizer["TotalBalance"]</h6>
+                            <h2 class="mb-0">@totalAssets.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</h2>
+                        </div>
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+                <div class="assets-card flex-fill">
+                    <h6 class="mb-3 fw-semibold">@Localizer["AssetAllocation"]</h6>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">@Localizer["LiquidBalance"]</span>
+                            <span class="fw-semibold">@userBalance.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">@Localizer["CryptoAssets"]</span>
+                            <span class="fw-semibold">@totalCoinValue.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">@Localizer["NetWorth"]</span>
+                            <h5 class="mb-0">@totalAssets.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alt Satır: Portfolio Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="portfolio-table">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Coin"]</th>
+                                <th>@Localizer["Amount"]</th>
+                                <th>@Localizer["AvgCost"]</th>
+                                <th>@Localizer["Price"]</th>
+                                <th>@Localizer["Value"]</th>
+                                <th>@Localizer["Profit/Loss"]</th>
+                                <th class="text-end">@Localizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="portfolio-row">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="ms-2">
+                                                <div class="fw-semibold">@item.Symbol</div>
+                                                <div class="text-muted small">@item.Symbol</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="total-amount" data-value="@item.TotalAmount.ToString("G", System.Globalization.CultureInfo.InvariantCulture)">
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-500">@item.TotalAmount.ToString("0.#######")</span>
+                                            <small class="text-muted">≈ <span class="total-value" data-symbol="@item.Symbol">-</span></small>
+                                        </div>
+                                    </td>
+                                    <td class="total-cost" data-value="@item.TotalCost.ToString("G", System.Globalization.CultureInfo.InvariantCulture)">
+                                        @item.TotalCost.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))
+                                    </td>
+                                    <td class="coin-update" data-symbol="@item.Symbol" data-value="@item.CurrentPrice.ToString("G")">
+                                        <span class="price-display">-</span>
+                                    </td>
+                                    <td class="total-value" data-symbol="@item.Symbol">
+                                        <span class="value-display">-</span>
+                                    </td>
+                                    <td>
+                                        <span class="profit-badge @(item.ProfitLoss >= 0 ? "positive" : "negative") profit-loss" data-symbol="@item.Symbol">
+                                            @item.ProfitLoss.ToString("+0.00;-0.00")%
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex gap-2 justify-content-end">
+                                            <button class="btn-buy" data-bs-toggle="modal" 
+                                                    data-bs-target="#BuyCoinModal" 
+                                                    data-symbol="@item.Symbol"
+                                                    data-price="@item.CurrentPrice">
+                                                @Localizer["Buy"]
+                                            </button>
+                                            <button class="btn-sell"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#SellCoinModal"
+                                                    data-symbol="@item.Symbol"
+                                                    data-price="@item.CurrentPrice">
+                                                @Localizer["Sell"]
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buy Coin Modal -->
+<div class="modal fade" id="BuyCoinModal" tabindex="-1" aria-labelledby="BuyCoinModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BuyCoinModalLabel">@Localizer["ModalBuyCoin"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Member" asp-action="PortfolioBuyCoin" method="post">
+                <div class="modal-body">
+                    <!-- Hidden input: Coin symbol -->
+                    <input type="hidden" id="modalSymbol" name="Symbol" value="" />
+
+                    <div class="mb-1">
+                        <label for="amount" class="form-label">@Localizer["ModalAmount"]</label>
+                        <input type="number" id="amount" name="Amount" class="form-control" placeholder="Enter amount" step="0.000001" min="0.000001" required />
+                    </div>
+                    <div class="mb-3 mt-1">
+                        <label for="total" class="form-label">@Localizer["ModalTotal(in USD)"]</label>
+                        <input type="text" id="total" class="form-control" placeholder="Calculated total" readonly />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">@Localizer["Buy"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["ModalCancel"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Sell Coin Modal-->
+<div class="modal fade" id="SellCoinModal" tabindex="-1" aria-labelledby="SellCoinModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SellCoinModalLabel">@Localizer["ModalSellCoin"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Member" asp-action="PortfolioSellCoin" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="sellModalSymbol" name="Symbol" value="" />
+                    <div class="mb-1">
+                        <label for="sellAmount" class="form-label">@Localizer["ModalAmount"]</label>
+                        <input type="number" id="sellAmount" name="Amount" class="form-control" placeholder="Enter amount" step="0.000001" min="0.000001" required />
+                    </div>
+                    <div class="mb-3 mt-1">
+                        <label for="sellTotal" class="form-label">@Localizer["ModalTotal(in USD)"]</label>
+                        <input type="text" id="sellTotal" class="form-control" placeholder="Calculated total" readonly />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-sell">Sell</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["ModalCancel"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- SignalR ve diğer scriptler -->
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(() => {
+            var connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7288/coinhub").build();
+
+            $("#constatus").text(connection.state);
+
+            connection.start().then(() => {
+                $("#constatus").text(connection.state);
+
+                setInterval(() => {
+                    $(".coin-update").each(function () {
+                        const symbol = $(this).data("symbol");
+                        connection.invoke("SendCurrentPrice", symbol);
+                    });
+                }, 2000);
+            }).catch((err) => console.log(err));
+
+            connection.on("ReceiveCoinUpdate", (currentPrice, symbol) => {
+                const currentPriceCell = $(`.coin-update[data-symbol="${symbol}"]`);
+                currentPriceCell.text(parseFloat(currentPrice).toFixed(2));
+
+                const row = currentPriceCell.closest("tr");
+                const totalAmount = Number(row.find(".total-amount").data("value"));
+                const totalCost = Number(row.find(".total-cost").data("value"));
+                const totalValue = totalAmount * currentPrice;
+
+                $(`.total-value[data-symbol="${symbol}"]`).text(
+                    totalValue.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                );
+
+                const profitLoss = totalValue - totalCost;
+                const profitLossCell = $(`.profit-loss[data-symbol="${symbol}"]`);
+                profitLossCell.text(
+                    profitLoss.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                );
+
+                if (profitLoss >= 0) {
+                    profitLossCell.removeClass("text-danger").addClass("text-success");
+                } else {
+                    profitLossCell.removeClass("text-success").addClass("text-danger");
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var buyCoinModal = document.getElementById("BuyCoinModal");
+
+            // Modal açılırken, butondan coin sembolü ve fiyatını al ve inputlara ata.
+            buyCoinModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget; // Modalı açan buton
+                var symbol = button.getAttribute("data-symbol");
+                var price = button.getAttribute("data-price");
+
+                // Gizli inputa sembolü ata
+                document.getElementById("modalSymbol").value = symbol;
+
+                // Coin fiyatını modalın data attribute'una kaydedelim (hesaplama için)
+                buyCoinModal.setAttribute("data-price", price);
+
+                // Temizle: Amount ve Total inputlarını sıfırla.
+                document.getElementById("amount").value = "";
+                document.getElementById("total").value = "";
+            });
+
+            // Amount inputuna değişiklik olduğunda Total hesapla.
+            var amountInput = document.getElementById("amount");
+            var totalInput = document.getElementById("total");
+
+            amountInput.addEventListener("input", function () {
+                // Virgülü nokta ile değiştirerek parse işlemi yapalım.
+                var amountStr = amountInput.value.replace(/,/g, '.');
+                var amount = parseFloat(amountStr);
+
+                // Fiyat değerini de virgül varsa nokta ile değiştirerek alalım.
+                var priceStr = buyCoinModal.getAttribute("data-price").replace(/,/g, '.');
+                var price = parseFloat(priceStr);
+
+                if (!isNaN(amount) && !isNaN(price)) {
+                    var total = amount * price;
+                    totalInput.value = total.toFixed(2);
+                } else {
+                    totalInput.value = "";
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Sell Coin Modal için işlevsellik
+            var sellCoinModal = document.getElementById("SellCoinModal");
+
+            sellCoinModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget; // Modalı tetikleyen buton
+                var symbol = button.getAttribute("data-symbol"); // Butondaki coin sembolünü al
+                var price = button.getAttribute("data-price");   // Butondaki coin fiyatını al
+
+                // Gizli inputa coin sembolünü aktar
+                var modalSymbolInput = document.getElementById("sellModalSymbol");
+                if (modalSymbolInput) {
+                    modalSymbolInput.value = symbol;
+                }
+
+                // Hesaplama için modalın data attribute'una fiyat bilgisini kaydet
+                sellCoinModal.setAttribute("data-price", price);
+
+                // Sell Amount ve Sell Total alanlarını temizle
+                document.getElementById("sellAmount").value = "";
+                document.getElementById("sellTotal").value = "";
+            });
+
+            // Sell Amount alanında değişiklik olduğunda, Total (USD) hesapla
+            var sellAmountInput = document.getElementById("sellAmount");
+            var sellTotalInput = document.getElementById("sellTotal");
+
+            sellAmountInput.addEventListener("input", function () {
+                // Virgül olan değerleri nokta ile değiştirerek parse edelim.
+                var amountStr = sellAmountInput.value.replace(/,/g, '.');
+                var amount = parseFloat(amountStr);
+
+                // Fiyat değerini de virgül varsa nokta ile değiştirerek alalım.
+                var priceStr = sellCoinModal.getAttribute("data-price").replace(/,/g, '.');
+                var price = parseFloat(priceStr);
+
+                if (!isNaN(amount) && !isNaN(price)) {
+                    var total = amount * price;
+                    sellTotalInput.value = total.toFixed(2);
+                } else {
+                    sellTotalInput.value = "";
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,909 @@
+﻿@using CoinTradeAppMVC.ViewModels
+@using CoinTradeAppMVC.Controllers
+@{
+	var PortfolioChartData = ViewBag.PortfolioChartData;
+	ViewData["Title"] = "Home";
+}
+@model List<HomeCoinViewModel>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+	/* Main styles */
+	body {
+		font-family: 'Inter', sans-serif;
+		background-color: #f8fafc;
+	}
+	
+	/* Dashboard Header */
+	section.dashboard-header {
+		background: linear-gradient(45deg, #0f172a, #1e293b);
+		border-radius: 12px;
+		padding: 3rem 2rem;
+		margin-bottom: 2rem;
+		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+		position: relative;
+		overflow: hidden;
+	}
+
+		section.dashboard-header::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 100%;
+			height: 100%;
+			background: url('/images/hero-pattern.svg') no-repeat;
+			background-size: cover;
+			opacity: 0.05;
+		}
+	
+	.welcome-message {
+		font-weight: 800;
+		font-size: 3rem;
+		margin-bottom: 1.5rem;
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	.dashboard-subtitle {
+		font-weight: 400;
+		font-size: 1.125rem;
+		opacity: 0.9;
+		margin-bottom: 2rem;
+		max-width: 600px;
+		color: white;
+	}
+
+	.dashboard-actions {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	/* Dashboard buton stilleri - tek tanım */
+	.dashboard-btn {
+		padding: 0.75rem 1.5rem;
+		border-radius: 8px;
+		font-weight: 600;
+		font-size: 1rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: all 0.3s ease;
+		cursor: pointer !important; /* Mutlaka gösterge olarak el ikonunu gösterir */
+		pointer-events: auto !important; /* Tıklama olaylarını kesinlikle engellenmez */
+		z-index: 10 !important; /* Diğer elementlerin üzerinde gösterilmesini sağlar */
+		position: relative; /* z-index'in çalışması için */
+		text-decoration: none !important; /* Altı çizili olmamasını sağlar */
+		-webkit-user-select: none; /* Safari için tıklama sorunlarını önler */
+		user-select: none; /* Tıklama sorunlarını önler */
+		border: none;
+		-webkit-tap-highlight-color: rgba(0,0,0,0); /* Mobil cihazlarda tıklama vurgusunu kaldırır */
+	}
+	
+	.btn-primary-action {
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		color: white !important;
+		box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+	}
+	
+	.btn-primary-action:hover, 
+	.btn-primary-action:active, 
+	.btn-primary-action:focus {
+		text-decoration: none !important;
+		color: white !important;
+		box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+		transform: translateY(-2px);
+	}
+
+	.btn-secondary-action {
+		background: rgba(255, 255, 255, 0.1);
+		color: white !important; 
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+	
+	.btn-secondary-action:hover, 
+	.btn-secondary-action:active, 
+	.btn-secondary-action:focus {
+		text-decoration: none !important;
+		color: white !important;
+		background: rgba(255, 255, 255, 0.2);
+		border-color: rgba(255, 255, 255, 0.3);
+		transform: translateY(-2px);
+	}
+
+	.dashboard-header img {
+		max-height: 400px;
+		object-fit: contain;
+		margin-left: auto;
+	}
+	
+	/* Market overview */
+	.section-title {
+		font-weight: 700;
+		font-size: 1.25rem;
+		color: #0f172a;
+		margin-bottom: 1rem;
+	}
+	
+	.coin-widget {
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+		overflow: hidden;
+	}
+	
+	.widget-header {
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+	
+	.coin-tabs {
+		display: flex;
+		gap: 1.5rem;
+	}
+	
+	.coin-tab {
+		border: none;
+		background: none;
+		font-weight: 600;
+		color: #64748b;
+		padding: 0 0 0.5rem 0;
+		position: relative;
+		cursor: pointer;
+		transition: color 0.2s;
+	}
+	
+	.active-tab {
+		color: #0ea5e9;
+		border-bottom: 2px solid #0ea5e9;
+	}
+	
+	.view-all {
+		color: #64748b;
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	
+	.view-all:hover {
+		color: #0ea5e9;
+	}
+	
+	/* Coin item styles */
+	.crypto-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem 1.5rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		transition: all 0.2s;
+		text-decoration: none;
+		color: inherit;
+	}
+	
+	.crypto-item:hover {
+		background-color: #f1f5f9;
+	}
+	
+	.crypto-item:last-child {
+		border-bottom: none;
+	}
+	
+	.coin-logo {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		margin-right: 1rem;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	}
+	
+	.coin-name {
+		font-weight: 600;
+		color: #0f172a;
+	}
+	
+	.coin-symbol {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin-top: 0.25rem;
+	}
+	
+	.coin-price {
+		font-weight: 600;
+		font-size: 1rem;
+		color: #0f172a;
+		text-align: right;
+	}
+	
+	.coin-change {
+		font-size: 0.875rem;
+		font-weight: 500;
+		margin-top: 0.25rem;
+	}
+	
+	.text-success {
+		color: #10b981 !important;
+	}
+	
+	.text-danger {
+		color: #ef4444 !important;
+	}
+	
+	/* Market stats and data cards */
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+	
+	.stat-card {
+		background: white;
+		border-radius: 12px;
+		padding: 1.5rem;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+	}
+	
+	.stat-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #0f172a;
+		margin-bottom: 0.5rem;
+	}
+	
+	.stat-label {
+		font-size: 0.875rem;
+		color: #64748b;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	
+	.stat-trend {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+	
+	.trend-up {
+		background-color: rgba(16, 185, 129, 0.1);
+		color: #10b981;
+	}
+	
+	.trend-down {
+		background-color: rgba(239, 68, 68, 0.1);
+		color: #ef4444;
+	}
+	
+	/* News ticker */
+	.news-ticker {
+		background: white;
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-bottom: 2rem;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+		overflow: hidden;
+		position: relative;
+	}
+	
+	.ticker-label {
+		font-weight: 600;
+		color: #0ea5e9;
+		margin-right: 1rem;
+		white-space: nowrap;
+		display: inline-block;
+		position: relative;
+		padding-right: 1.5rem;
+	}
+	
+	.ticker-label::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		height: 70%;
+		width: 1px;
+		background: rgba(0, 0, 0, 0.1);
+	}
+	
+	.ticker-content {
+		display: inline-block;
+		white-space: nowrap;
+		animation: ticker 30s linear infinite;
+	}
+	
+	.ticker-item {
+		display: inline-block;
+		margin-right: 2rem;
+		color: #334155;
+	}
+	
+	@@keyframes ticker {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-100%);
+		}
+	}
+	
+	/* Portfolio preview */
+	.portfolio-preview {
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+		overflow: hidden;
+		margin-bottom: 2rem;
+	}
+	
+	.portfolio-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+	
+	.portfolio-title {
+		font-weight: 600;
+		color: #0f172a;
+	}
+	
+	.portfolio-value {
+		font-weight: 700;
+		font-size: 1.25rem;
+		color: #0f172a;
+	}
+	
+	.portfolio-change {
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+	
+	.portfolio-distribution {
+		display: flex;
+		padding: 1.5rem;
+	}
+	
+	.distribution-chart {
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: conic-gradient(
+			#0ea5e9 0% 50%,
+			#6366f1 50% 70%,
+			#8b5cf6 70% 85%,
+			#ec4899 85% 100%
+		);
+	}
+	
+	.distribution-legend {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding-left: 1.5rem;
+	}
+	
+	.legend-item {
+		display: flex;
+		align-items: center;
+		margin-bottom: 0.5rem;
+	}
+	
+	.legend-color {
+		width: 12px;
+		height: 12px;
+		border-radius: 2px;
+		margin-right: 0.5rem;
+	}
+	
+	.legend-text {
+		font-size: 0.875rem;
+		color: #64748b;
+	}
+	
+	.legend-value {
+		font-weight: 600;
+		color: #0f172a;
+		margin-left: auto;
+	}
+	
+	/* Featured section */
+	.featured-section {
+		background: white;
+		border-radius: 12px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+	}
+	
+	.featured-title {
+		font-weight: 700;
+		margin-bottom: 1rem;
+		color: #0f172a;
+	}
+	
+	.featured-content {
+		display: flex;
+		align-items: center;
+	}
+	
+	.featured-image {
+		width: 40%;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	
+	.featured-image img {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+	}
+	
+	.featured-text {
+		width: 60%;
+		padding-left: 1.5rem;
+	}
+	
+	.featured-description {
+		color: #334155;
+		margin-bottom: 1rem;
+		line-height: 1.6;
+	}
+	
+	.btn-featured {
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		color: white;
+		border: none;
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
+		font-weight: 500;
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: all 0.2s;
+		cursor: pointer; /* Tıklanabilir olduğunu belirtir */
+	}
+	
+	.btn-featured:hover {
+		box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3);
+		transform: translateY(-2px);
+	}
+	
+	/* Mevcut stiller korunuyor */
+	.legend-container {
+		min-width: 120px;
+	}
+
+	#customLegend li {
+		display: flex;
+		align-items: center;
+		margin-bottom: 8px;
+		font-size: 0.9rem;
+		color: #333;
+	}
+
+	.legend-color {
+		width: 14px;
+		height: 14px;
+		display: inline-block;
+		margin-right: 8px;
+		border-radius: 3px;
+	}
+
+	.portfolio-chart {
+		margin-left: 390px;
+	}
+
+	.list-unstyled {
+		margin-left: 20px;
+	}
+
+	/* Responsive ayarlar */
+	@@media (max-width: 991px) {
+		section.dashboard-header {
+			padding: 2rem 1.5rem;
+			text-align: center;
+		}
+
+		.welcome-message {
+			font-size: 2.5rem;
+		}
+
+		.dashboard-subtitle {
+			margin: 0 auto 1.5rem;
+		}
+
+		.dashboard-actions {
+			justify-content: center;
+			width: 100%;
+		}
+
+		.dashboard-btn {
+			padding: 0.6rem 1.2rem;
+			font-size: 0.9rem;
+		}
+	}
+
+	@@media (max-width: 767px) {
+		section.dashboard-header {
+			padding: 1.5rem 1rem;
+		}
+
+		.welcome-message {
+			font-size: 2rem;
+		}
+
+		.dashboard-subtitle {
+			font-size: 1rem;
+		}
+
+		.dashboard-actions {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.dashboard-btn {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.portfolio-chart {
+			margin-left: 0; /* Mobil için sıfırlama */
+		}
+	}
+</style>
+
+<div class="container mt-4">
+	<!-- Dashboard Header -->
+	<section class="dashboard-header">
+		<div class="row align-items-center">
+			<div class="col-lg-7">
+				<h1 class="welcome-message">@Localizer["WelcomeMessage"]</h1>
+				<p class="dashboard-subtitle">@Localizer["ManageYourPortfolioWithRealTimeMessage"]</p>
+				<div class="dashboard-actions">
+					<a href="/Member/TransferCoin" class="dashboard-btn btn-primary-action" onclick="navigateTo('/Member/TransferCoin')" role="button">
+						<i class="fas fa-paper-plane"></i>
+						<span>@Localizer["TransferMessage"]</span>
+					</a>
+					<a href="/Member/UserPortfolio" class="dashboard-btn btn-secondary-action" onclick="navigateTo('/Member/UserPortfolio')" role="button">
+						<i class="fas fa-chart-pie"></i>
+						<span>@Localizer["PortfolioMessage"]</span>
+					</a>
+					<a href="/Member/Orders" class="dashboard-btn btn-secondary-action" onclick="navigateTo('/Member/Orders')" role="button">
+						<i class="fas fa-list"></i>
+						<span>@Localizer["OrdersMessage"]</span>
+					</a>
+				</div>
+			</div>
+			<div class="col-lg-5 d-none d-lg-block">
+				<img src="~/images/coin-svgrepo-com.svg" alt="Dashboard Overview" class="img-fluid" width="200" height="200" style="margin-left:118px"/>
+			</div>
+		</div>
+	</section>
+	
+	<!-- News Ticker -->
+	<div class="news-ticker">
+		<span class="ticker-label">@Localizer["LatestNewsMessage"]</span>
+		<div class="ticker-content">
+			<span class="ticker-item">Bitcoin price surges as institutional investors show interest.</span>
+			<span class="ticker-item">Ethereum network upgrades to improve scalability.</span>
+			<span class="ticker-item">Binance announces new security measures for user funds.</span>
+			<span class="ticker-item">DeFi platforms see increased activity in the last quarter.</span>
+		</div>
+	</div>
+	
+	<!-- Market Overview Section -->
+	<h2 class="section-title">@Localizer["MarketOverviewMessage"]</h2>
+	<div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-value">$1.8T</div>
+			<div class="stat-label">
+				<span>@Localizer["TotalMarketCapMessage"]</span>
+				<span class="stat-trend trend-up">
+					<i class="fas fa-caret-up"></i>
+					2.4%
+				</span>
+			</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-value">$92.5B</div>
+			<div class="stat-label">
+				<span>@Localizer["24hVolumeMessage"]</span>
+				<span class="stat-trend trend-up">
+					<i class="fas fa-caret-up"></i>
+					3.0%
+				</span>
+			</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-value">BTC: 50%</div>
+			<div class="stat-label">
+				<span>@Localizer["DominanceMessage"]</span>
+				<span class="stat-trend trend-down">
+					<i class="fas fa-caret-down"></i>
+					0.3%
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Portfolio Preview -->
+	<div>
+		<p><b>@Localizer["PortfolioGraphicMessage"]</b></p>
+		<div class="portfolio-preview d-flex align-items-center">
+			<div class="legend-container me-3">
+				<ul id="customLegend" class="list-unstyled mb-0"></ul>
+			</div>
+			<div class="portfolio-chart">
+				<canvas id="portfolioChart" width="250" height="250"></canvas>
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- Trending Coins -->
+	<div class="row">
+		<div class="col">
+			<h2 class="section-title">Trending Coins</h2>
+			<div class="coin-widget">
+				<div class="widget-header d-flex justify-content-between align-items-center">
+					<div class="coin-tabs">
+						<button class="coin-tab active-tab">@Localizer["PopularTab"]</button>
+						<button class="coin-tab">@Localizer["NewListingTab"]</button>
+					</div>
+					<a asp-controller="Member" asp-action="ViewAllCoins" class="view-all">
+						@Localizer["ViewAllCoins"]
+						<i class="fas fa-chevron-right fa-xs ms-1"></i>
+					</a>
+				</div>
+				
+				@foreach (var coin in Model)
+				{
+					<a asp-controller="Member" asp-action="CoinData" asp-route-symbol="@coin.Symbol.ToUpper()USDT" 
+					   class="crypto-item" data-symbol="@coin.Symbol.ToUpper()">
+						<div class="d-flex align-items-center">
+							<img src="@coin.LogoUrl" alt="@coin.Name logo" class="coin-logo">
+							<div>
+								<div class="coin-name">@coin.Symbol</div>
+								<div class="coin-symbol">@coin.Name</div>
+							</div>
+						</div>
+						<div>
+							<div class="coin-price current-price" data-price="@coin.Price.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))">
+								@Localizer["LoadingMessage"]
+							</div>
+							<div class="coin-change change @(coin.ChangePercent >= 0 ? "text-success" : "text-danger")" 
+								 data-change="@coin.ChangePercent.ToString("F2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))">
+								@Localizer["LoadingMessage"]
+							</div>
+						</div>
+					</a>
+				}
+			</div>
+		</div>
+	</div>
+	
+	<!-- Featured Section -->
+	<div class="featured-section mt-4">
+		<h3 class="featured-title">@Localizer["StartTradingTodayMessage"]</h3>
+		<div class="featured-content">
+			<div class="featured-image">
+				<img src="/images/coin-detail.png" alt="Trading Platform" class="img-fluid">
+			</div>
+			<div class="featured-text">
+				<p class="featured-description">@Localizer["FundYourAccountAndStartTradingMessage"] @Localizer["Ourplatformprovidesreal-timemarketdataMessage"]</p>
+				<a href="/Member/CoinData?symbol=BTCUSDT" class="btn-featured">
+					<i class="fas fa-arrow-right"></i>
+					@Localizer["StartTradingMessage"]
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+@section Scripts
+{
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+	<script type="text/javascript">
+		// Buton yönlendirme fonksiyonu
+		function navigateTo(url) {
+			window.location.href = url;
+			return false; // Event'in daha fazla işlenmesini engeller
+		}
+		
+		// Sayfa yüklendikten sonra butonları yeniden bağlar
+		$(document).ready(() => {
+			// Butonların tıklama olaylarını bağla
+			$('.dashboard-btn').on('click', function(e) {
+				const url = $(this).attr('href');
+				if (url) {
+					window.location.href = url;
+					return false; // Event'in daha fazla işlenmesini engeller
+				}
+			});
+			
+			const connection = new signalR.HubConnectionBuilder()
+				.withUrl("https://localhost:7288/coinhub")
+				.withAutomaticReconnect()
+				.configureLogging(signalR.LogLevel.Information)
+				.build();
+
+			connection.onreconnecting(error => {
+				console.log('[SIGNALR] Reconnecting...', error);
+			});
+
+			connection.onreconnected(() => {
+				console.log('[SIGNALR] Reconnected!');
+			});
+
+			connection.onclose(() => {
+				console.log('[SIGNALR] Connection closed. Reconnecting...');
+			});
+
+			// ReceiveIndexHomeCoinData: Trending Coins güncelleme
+			connection.on("ReceiveIndexHomeCoinData", (coins) => {
+				console.log('[SIGNALR] Received home coin data:', coins);
+				coins.forEach((coin) => {
+					const element = $(`.crypto-item[data-symbol="${coin.symbol}"]`);
+					if (element.length) {
+						const priceElement = element.find(".coin-price");
+						const changeElement = element.find(".coin-change");
+
+						const formattedPrice = new Intl.NumberFormat('en-US', {
+							style: 'currency',
+							currency: 'USD',
+						}).format(coin.price);
+
+						const formattedChangePercent = new Intl.NumberFormat('en-US', {
+							style: 'decimal',
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						}).format(coin.changePercent * 1000) + '%';
+
+						priceElement.text(formattedPrice);
+						changeElement.text(formattedChangePercent);
+						changeElement.removeClass("text-success text-danger");
+						changeElement.addClass(coin.changePercent >= 0 ? "text-success" : "text-danger");
+					}
+				});
+			});
+
+			// Portföy verilerini alma
+			const chartData = @Html.Raw(ViewBag.PortfolioChartData ?? "[]");
+			const ctx = document.getElementById("portfolioChart")?.getContext("2d");
+			const baseColors = ['#0ea5e9', '#6366f1', '#8b5cf6', '#ec4899', '#facc15'];
+
+			// Portföy verilerini saklama
+			const symbolMap = {};
+			chartData.forEach(item => {
+				symbolMap[item.symbol] = item.amount;
+				console.log(`[INIT] ${item.symbol}: ${item.amount}`);
+			});
+
+			// Canlı USD değerleri için obje
+			const liveValues = {};
+
+			// Renk üretme fonksiyonu
+			function generateColors(count) {
+				const colors = [...baseColors];
+				for (let i = colors.length; i < count; i++) {
+					const hue = (i * 37) % 360;
+					colors.push(`hsl(${hue}, 70%, 60%)`);
+				}
+				return colors;
+			}
+
+			// Grafik ve legend başlatma
+			let chart;
+			if (chartData.length > 0 && ctx) {
+				const labels = chartData.map(item => item.symbol);
+				const initialValues = chartData.map(() => 0); // Başlangıçta sıfır
+				const colors = generateColors(labels.length);
+
+				chart = new Chart(ctx, {
+					type: 'doughnut',
+					data: {
+						labels: labels,
+						datasets: [{
+							data: initialValues,
+							backgroundColor: colors.slice(0, labels.length)
+						}]
+					},
+					options: {
+						responsive: false,
+						cutout: '60%',
+						plugins: {
+							legend: { display: false }
+						}
+					}
+				});
+
+				// Custom legend oluşturma
+				const legendContainer = document.getElementById("customLegend");
+				labels.forEach((label, i) => {
+					const li = document.createElement("li");
+					li.innerHTML = `<span class="legend-color" style="background-color: ${colors[i]}"></span> ${label} <span class="legend-value" data-symbol="${label}">$0.00</span>`;
+					legendContainer.appendChild(li);
+				});
+			}
+
+			// ReceiveCoinUpdate: Portföy grafiği güncelleme
+			connection.on("ReceiveCoinUpdate", (currentPrice, symbol) => {
+				console.log(`[SIGNALR] Received update: ${symbol}, Price: ${currentPrice}`);
+				if (symbol in symbolMap) {
+					const amount = symbolMap[symbol];
+					const usdValue = amount * currentPrice;
+					liveValues[symbol] = usdValue;
+					console.log(`[UPDATE] ${symbol}: Amount=${amount}, Price=${currentPrice}, USDValue=${usdValue}`);
+
+					// Grafik ve legend güncelleme
+					if (chart) {
+						const newData = chart.data.labels.map(label => liveValues[label] || 0);
+						chart.data.datasets[0].data = newData;
+						chart.update();
+						console.log(`[CHART] Updated data: ${newData}`);
+					}
+
+					const legendValue = document.querySelector(`.legend-value[data-symbol="${symbol}"]`);
+					if (legendValue) {
+						legendValue.textContent = usdValue.toLocaleString("en-US", {
+							style: "currency",
+							currency: "USD"
+						});
+					}
+				} else {
+					console.log(`[SKIP] ${symbol} not in portfolio`);
+				}
+			});
+
+			const startConnection = async () => {
+				try {
+					await connection.start();
+					console.log("[SIGNALR] Connected to SignalR hub");
+					// Portföydeki coin'ler için fiyat talep etme
+					Object.keys(symbolMap).forEach(symbol => {
+						connection.invoke("SendCurrentPrice", symbol)
+							.catch(err => console.error(`[SIGNALR] Error invoking SendCurrentPrice for ${symbol}:`, err));
+					});
+					// Periyodik veri talebi
+					setInterval(() => {
+						console.log("[SIGNALR] Requesting coin data...");
+						connection.invoke("SendHomeCoinData")
+							.catch(err => console.error("[SIGNALR] Error fetching coin data:", err));
+						// Portföy fiyatlarını güncelle
+						Object.keys(symbolMap).forEach(symbol => {
+							connection.invoke("SendCurrentPrice", symbol)
+								.catch(err => console.error(`[SIGNALR] Error invoking SendCurrentPrice for ${symbol}:`, err));
+						});
+					}, 10000); // Her 10 saniyede bir
+				} catch (err) {
+					console.error("[SIGNALR] Connection failed:", err);
+					setTimeout(startConnection, 5000); // Retry connection
+				}
+			};
+
+			startConnection();
+
+			// Tab switching functionality
+			$('.coin-tab').on('click', function () {
+				$('.coin-tab').removeClass('active-tab');
+				$(this).addClass('active-tab');
+			});
+		});
+	</script>
+}

@@ -1,0 +1,242 @@
+﻿@using CoinTradeAppMVC.ViewModels
+@{
+	ViewData["Title"] = "View All Coins";
+}
+
+@model ViewAllCoinsViewModel
+
+<title>View All Coins</title>
+
+<style>
+	body {
+		font-family: "Roboto", sans-serif;
+		background: #f5f5f5;
+		color: #333;
+	}
+
+	.crypto-card {
+		background: #FFFFFF;
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+		padding: 1.5rem;
+		margin: 2rem auto;
+		max-width: 1200px;
+		font-family: 'Inter', sans-serif;
+	}
+
+	.crypto-header {
+		display: flex;
+		align-items: center;
+		padding: 1rem 1.5rem;
+		background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+		border-radius: 12px;
+		margin-bottom: 1rem;
+		font-weight: 600;
+		color: #6c757d;
+	}
+
+	.crypto-item {
+		display: flex;
+		align-items: center;
+		padding: 1.2rem 1.5rem;
+		margin: 0.5rem 0;
+		border-radius: 12px;
+		transition: all 0.2s ease;
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid rgba(0, 0, 0, 0.03);
+	}
+
+		.crypto-item:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+			background: #f8f9fa;
+		}
+
+	.crypto-icon {
+		width: 28px;
+		height: 28px;
+		margin-right: 15px;
+		border-radius: 50%;
+	}
+
+	.symbol {
+		font-weight: 600;
+		color: #212529;
+	}
+
+	.crypto-name {
+		flex: 2;
+		display: flex;
+		align-items: center;
+	}
+
+	.crypto-price {
+		flex: 1.5;
+		font-weight: 500;
+		color: #212529;
+	}
+
+	.crypto-change {
+		flex: 1;
+	}
+
+	.crypto-volume {
+		flex: 2;
+		color: #6c757d;
+	}
+
+	.change-badge {
+		padding: 0.25rem 0.75rem;
+		border-radius: 20px;
+		font-size: 0.85em;
+		font-weight: 500;
+		display: inline-block;
+	}
+
+	@@media (max-width: 768px) {
+		.crypto-card {
+			margin: 1rem;
+			padding: 1rem;
+		}
+
+		.crypto-header {
+			display: none;
+		}
+
+		.crypto-item {
+			flex-wrap: wrap;
+			padding: 1rem;
+			position: relative;
+		}
+
+		.crypto-name {
+			flex: 0 0 100%;
+			margin-bottom: 0.5rem;
+		}
+	}
+</style>
+
+<div class="crypto-card">
+	<div class="crypto-header">
+		<div class="crypto-name">
+			@Localizer["Symbol"]
+		</div>
+
+		<div class="crypto-price">
+			@Localizer["Price"]
+		</div>
+
+		<div class="crypto-change">
+			@Localizer["24hChange"]
+		</div>
+
+		<div class="crypto-volume">
+			@Localizer["Volume"]
+		</div>
+	</div>
+
+	@foreach (var coin in Model.TickerData)
+	{
+		<a asp-controller="Member" asp-action="CoinData" asp-route-symbol="@coin.Symbol.ToUpper()"  style="text-decoration:none; color:black;">
+			<div class="crypto-item active">
+				<div class="crypto-name">
+					<img src="https://cdn.jsdelivr.net/gh/simplr-sh/coin-logos/images/@(coin.Symbol[..^4].ToLower())/small.png"
+						 alt="@coin.Symbol logo"
+						 class="crypto-icon rounded-circle"
+						 width="30"
+						 height="30"
+						 onerror="this.onerror=null;this.src='https://via.placeholder.com/30x30';">
+
+					<b>@coin.Symbol</b>
+				</div>
+
+				<div class="crypto-price coin-update" data-symbol="@coin.Symbol.ToUpper()">@Localizer["Loading..."]
+					@* @coin.Price *@
+				</div>
+
+				<div class="crypto-change coin-change" data-symbol="@coin.Symbol.ToUpper()">@Localizer["Loading..."]
+					@* @coin.Change% *@
+				</div>
+
+				<div class="crypto-volume coin-volume" data-symbol="@coin.Symbol.ToUpper()">@Localizer["Loading..."]
+				</div>
+			</div>
+		</a>
+	}
+
+</div>
+
+
+
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+@section Scripts
+{
+	<script type="text/javascript">
+		$(document).ready(() => {
+			var connection = new signalR.HubConnectionBuilder()
+				.withUrl("https://localhost:7288/coinhub")
+				.build();
+
+			// Bağlantı durumunu başta göster
+			$("#constatus").text(connection.state);
+			console.log("Başlangıç bağlantı durumu:", connection.state);
+
+			// Bağlantıyı başlat
+			connection.start().then(() => {
+				console.log("SignalR bağlantısı kuruldu.");
+				$("#constatus").text(connection.state);
+
+				// Sunucuya düzenli istek gönderme
+				setInterval(() => {
+					var symbol = "USDT"; // veya dinamik bir değer
+					console.log("Sunucuya 'SendCoinData' çağrısı yapılıyor: " + symbol);
+					connection.invoke("SendCoinData", symbol)
+						.catch(err => console.error("SendCoinData çağrısı sırasında hata:", err));
+				}, 2000); // 2 saniyede bir
+			}).catch((err) => {
+				console.error("SignalR bağlantısı kurulurken hata:", err);
+				$("#constatus").text("Bağlantı hatası");
+			});
+
+			// Gelen veri işleme
+			connection.on("ReceiveCoinData", (coinPrice, coinVolume, coinChange, coinSymbol) => {
+				try {
+					console.log("ReceiveCoinData çağrısı alındı:");
+					console.log(`Symbol: ${coinSymbol}, Price: ${coinPrice}, Volume: ${coinVolume}, Change: ${coinChange}`);
+
+					// Coin bilgilerini güncelle
+					const coinPriceCell = $(`.coin-update[data-symbol="${coinSymbol}"]`);
+					if (coinPriceCell.length) {
+						coinPriceCell.text(parseFloat(coinPrice).toFixed(2));
+					}
+
+					const coinVolumeCell = $(`.coin-volume[data-symbol="${coinSymbol}"]`);
+					if (coinVolumeCell.length) {
+						coinVolumeCell.text(parseFloat(coinVolume).toFixed(2));
+					}
+
+					const coinChangeCell = $(`.coin-change[data-symbol="${coinSymbol}"]`);
+					if (coinChangeCell.length) {
+						coinChangeCell.text(`${parseFloat(coinChange).toFixed(2)}%`);
+						if (parseFloat(coinChange) > 0) {
+							coinChangeCell.css("color", "green");
+						} else if (parseFloat(coinChange) < 0) {
+							coinChangeCell.css("color", "red");
+						} else {
+							coinChangeCell.css("color", "black");
+						}
+					}
+				} catch (error) {
+					console.error("ReceiveCoinData işlenirken hata:", error);
+				}
+			});
+
+			// Sunucudan hata alınırsa
+			connection.on("ReceiveError", (errorMessage) => {
+				console.error("Sunucudan hata mesajı alındı:", errorMessage);
+				alert(`Sunucudan hata alındı: ${errorMessage}`);
+			});
+		});
+	</script>
+}

@@ -1,0 +1,733 @@
+﻿@using CoinTradeAppMVC.ViewModels
+
+@{
+    ViewData["Title"] = "Margin";
+    var userMarginCash = ViewBag.UserMarginBalance;
+    var coins = ViewBag.Coins;
+}
+
+@model MarginsPageViewModel
+
+<title>Margin</title>
+
+<style>
+
+    body {
+        font-family: "Roboto", sans-serif;
+        background: #f5f5f5;
+        color: #333;
+    }
+
+    /* Genel container & card stili (userPortfolio temasına benzer) */
+    .portfolio-container {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .portfolio-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 2px solid #e2e8f0;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .portfolio-header h3 {
+            margin: 0;
+        }
+    /* Üst header bölüm */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+        .page-header h3 {
+            margin: 0;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6c757d;
+        }
+    /* Buton stili */
+    .btn-order {
+        background: linear-gradient(45deg, #0ea5e9, #6366f1);
+        border: none;
+        border-radius: 8px;
+        color: white !important;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        width: auto;
+        min-width: 200px;
+        height: 48px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-order:hover {
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            background: linear-gradient(45deg, #0d94d4, #585be0);
+        }
+
+        .btn-order::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.15), transparent );
+            transition: 0.5s;
+        }
+
+    /* Margin Tablosu */
+    .margin-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+        .margin-table th {
+            color: #64748b;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+        }
+
+        .margin-table td {
+            padding: 1.25rem 1.5rem;
+            background: #ffffff;
+            border-bottom: 2px solid #f1f5f9;
+            vertical-align: middle;
+        }
+    /* Coin badge ve durum göstergesi */
+    .coin-badge {
+        background: #f1f5f9;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    .status-active {
+        background: #10b981;
+    }
+
+    .status-completed {
+        background: #64748b;
+    }
+    /* Diğer genel stiller */
+    .alert {
+        margin-bottom: 1rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Modern Modal Stili */
+    #createMarginModal .modal-content {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        border: none;
+        overflow: hidden;
+    }
+
+    /* Modal Header */
+    #createMarginModal .modal-header {
+        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        color: #fff;
+        border-bottom: none;
+        padding: 1.5rem;
+        position: relative;
+    }
+
+    #createMarginModal .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+
+    #createMarginModal .btn-close {
+        color: white;
+        opacity: 1;
+        filter: brightness(0) invert(1);
+        box-shadow: none;
+    }
+
+    /* Modal Body */
+    #createMarginModal .modal-body {
+        padding: 2rem;
+    }
+
+    /* Form Elemanları */
+    #createMarginModal .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    #createMarginModal .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    #createMarginModal .form-control,
+    #createMarginModal .form-select {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem;
+        height: auto;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+        color: #334155;
+    }
+
+    #createMarginModal .form-control:focus,
+    #createMarginModal .form-select:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        background-color: #fff;
+    }
+
+    #createMarginModal .form-control::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Validation Uyarıları */
+    #createMarginModal .text-danger {
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    #createMarginModal .alert-danger {
+        background-color: #fee2e2;
+        border: none;
+        color: #b91c1c;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Trade Type (Modernize edilmiş radio butonlar) */
+    #createMarginModal .trade-type {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    #createMarginModal .trade-type input[type="radio"] {
+        display: none;
+    }
+
+    #createMarginModal .trade-type label {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        min-width: 120px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        color: #64748b;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    #createMarginModal .trade-type input[value="true"] + label {
+        border-color: #dcfce7;
+        background: #f0fdf4;
+    }
+    
+    #createMarginModal .trade-type input[value="false"] + label {
+        border-color: #fee2e2;
+        background: #fef2f2;
+    }
+
+    #createMarginModal .trade-type input[value="true"]:checked + label {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: white;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+    }
+
+    #createMarginModal .trade-type input[value="false"]:checked + label {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Kaldıraç Göstergesi */
+    #createMarginModal .leverage-display {
+        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    }
+
+    #createMarginModal #leverage {
+        font-size: 1.5rem;
+        padding-left: 0.25rem;
+    }
+
+    /* Aksiyon Butonları */
+    #createMarginModal .action-buttons {
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    #createMarginModal .action-buttons .btn-success {
+        background: linear-gradient(45deg, #0ea5e9, #6366f1);
+        border: none;
+        border-radius: 10px;
+        padding: 0.9rem 2.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+        letter-spacing: 0.5px;
+    }
+
+    #createMarginModal .action-buttons .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+    }
+
+    #createMarginModal .action-buttons .btn-danger {
+        background: linear-gradient(45deg, #ef4444, #dc2626);
+        border: none;
+        border-radius: 10px;
+        padding: 0.9rem 2.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        letter-spacing: 0.5px;
+    }
+
+    #createMarginModal .action-buttons .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<section class="container mt-5">
+    <!-- Sayfa Üst Header'ı -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h3>@Localizer["MarginPositions"]</h3>
+            <p>Available Margin Balance: @userMarginCash.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</p>
+        </div>
+        <button type="button" class="btn-order" data-bs-toggle="modal" data-bs-target="#createMarginModal">
+            <i class="fas fa-plus"></i> @Localizer["CreateNewMargin"]
+        </button>
+    </div>
+
+    <!-- Alert Mesajları -->
+    <div>
+        @if (TempData["MarginSuccessMessage"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @TempData["MarginSuccessMessage"]
+            </div>
+        }
+        @if (TempData["NewMarginErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["NewMarginErrorMessage"]
+            </div>
+        }
+        @if (TempData["MarginDeleteErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["MarginDeleteErrorMessage"]
+            </div>
+        }
+        @if (TempData["MarginDeleteSuccessMessage"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @TempData["MarginDeleteSuccessMessage"]
+            </div>
+        }
+        @if (TempData["MarginEditErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["MarginEditErrorMessage"]
+            </div>
+        }
+    </div>
+
+    <!-- Margin Pozisyonları Tablo Kartı -->
+    <div class="portfolio-container">
+        <div class="p-4">
+            <div class="table-responsive">
+                <table class="margin-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Symbol"]</th>
+                            <th>@Localizer["EntryPrice"]</th>
+                            <th>@Localizer["ExitPrice"]</th>
+                            <th>@Localizer["OriginalAmount"]</th>
+                            <th>@Localizer["BorrowAmount"]</th>
+                            <th>@Localizer["IsLongMargin"]</th>
+                            <th>@Localizer["Profit/Loss"]</th>
+                            <th>@Localizer["IsCompleted"]</th>
+                            <th>@Localizer["Action"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var margin in Model.Margins)
+                        {
+                            <tr class="portfolio-row">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="ms-3">
+                                            <div class="fw-600">@margin.CoinSymbol</div>
+                                            <div class="text-muted small coin-update" data-symbol="@margin.CoinSymbol">
+                                                @margin.CoinSymbol
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@margin.EntryPrice.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</td>
+                                <td>@margin.ExitPrice.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</td>
+                                <td>@margin.OriginalAmount.ToString("0.######", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</td>
+                                <td>@margin.BorrowAmount.ToString("0.######", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</td>
+                                <td>@(margin.IsLongMargin ? "Long/Buy" : "Short/Sell")</td>
+                                <td class="profit-loss @(margin.IsCompleted ? "completed" : "")"
+                                    style="color: @(margin.ProfitOrLoss >= 0 ? "green" : "red")"
+                                    data-symbol="@margin.CoinSymbol"
+                                    data-entry="@margin.EntryPrice"
+                                    data-original="@margin.OriginalAmount"
+                                    data-borrow="@margin.BorrowAmount"
+                                    data-islong="@margin.IsLongMargin">
+                                    @if (!margin.IsCompleted)
+                                    {
+                                        @margin.ProfitOrLoss.ToString("0.##")
+                                    }
+                                    else
+                                    {
+                                        <text>Completed</text>
+                                    }
+                                </td>
+                                <td>@(margin.IsCompleted ? "Completed" : "Not Completed")</td>
+                                <td>
+                                    <form asp-controller="Member" asp-action="DeleteMargin" method="post" class="d-inline">
+                                        <input type="hidden" name="marginId" value="@margin.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm" @(margin.IsCompleted ? "disabled" : "")>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Margin Modal -->
+    <div class="modal fade" id="createMarginModal" tabindex="-1" aria-labelledby="CreateMarginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-controller="Member" asp-action="Margin" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="CreateMarginModalLabel">@Localizer["CreateMarginPosition"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any())) {
+                        <div class="alert alert-danger" asp-validation-summary="All" role="alert"></div>
+                    }
+                    
+                    <div class="trade-type">
+                        <input type="radio" id="buy" value="true" asp-for="NewMargin.IsLongMargin" checked />
+                        <label for="buy">
+                            <i class="fas fa-arrow-up me-1"></i>
+                            @Localizer["Buy/Long"]
+                        </label>
+                        
+                        <input type="radio" id="sell" value="false" asp-for="NewMargin.IsLongMargin" />
+                        <label for="sell">
+                            <i class="fas fa-arrow-down me-1"></i>
+                            @Localizer["Sell/Short"]
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="CoinSymbol" class="form-label" asp-for="NewMargin.CoinSymbol">@Localizer["CoinSymbol"]</label>
+                        <select asp-for="NewMargin.CoinSymbol" asp-items="coins" class="form-select">
+                            <option value="">@Localizer["SelectCoin"]</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="NewMargin.CoinSymbol"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="EntryPrice" asp-for="NewMargin.EntryPrice">@Localizer["EntryPrice($)"]</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                    <input asp-for="NewMargin.EntryPrice" type="number" step="0.01" min="0.01" placeholder="Enter value" class="form-control" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="NewMargin.EntryPrice"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ExitPrice" asp-for="NewMargin.ExitPrice">@Localizer["ExitPrice($)"]</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                    <input asp-for="NewMargin.ExitPrice" type="number" step="0.01" min="0.01" placeholder="Enter value" class="form-control" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="NewMargin.ExitPrice"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="OriginalAmount" asp-for="NewMargin.OriginalAmount">@Localizer["OriginalAmount($)"]</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                    <input id="OriginalAmount" asp-for="NewMargin.OriginalAmount" type="number" step="0.0001" min="0.0001" placeholder="Enter value" class="form-control" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="NewMargin.OriginalAmount"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="BorrowAmount" asp-for="NewMargin.BorrowAmount">@Localizer["BorrowAmount($)"]</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                    <input id="BorrowAmount" asp-for="NewMargin.BorrowAmount" type="number" step="0.0001" min="0.0001" placeholder="Enter value" class="form-control" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="NewMargin.BorrowAmount"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="leverage-display">
+                        <i class="fas fa-chart-line me-2"></i>
+                        @Localizer["Leverage:"] <span id="leverage">1.00x</span>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="marginSubmit" type="submit" class="btn btn-success">
+                            @if (Model?.NewMargin?.IsLongMargin ?? true)
+                            {
+                                <i class="fas fa-arrow-up me-2"></i>@Localizer["Buy/Long"]
+                            }
+                            else
+                            {
+                                <i class="fas fa-arrow-down me-2"></i>@Localizer["Sell/Short"]
+                            }
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Script Bölümü: Radyo buton kontrolü, sayfalama ve SignalR entegrasyonu -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Radio button elementlerini seçiyoruz
+        var buyRadio = document.querySelector('input[name="NewMargin.IsLongMargin"][value="true"]');
+        var sellRadio = document.querySelector('input[name="NewMargin.IsLongMargin"][value="false"]');
+        var submitButton = document.getElementById('marginSubmit');
+
+        // Butonun metnini ve sınıfını güncelleyen fonksiyon
+        function updateButton() {
+            if (buyRadio.checked) {
+                submitButton.innerHTML = '<i class="fas fa-arrow-up me-2"></i>' + "Buy/Long";
+                submitButton.classList.remove("btn-danger");
+                submitButton.classList.add("btn-success");
+            } else if (sellRadio.checked) {
+                submitButton.innerHTML = '<i class="fas fa-arrow-down me-2"></i>' + "Sell/Short";
+                submitButton.classList.remove("btn-success");
+                submitButton.classList.add("btn-danger");
+            }
+        }
+
+        // İlk yüklemede butonu güncelle
+        updateButton();
+
+        // Radio button'larda değişim olduğunda butonu güncelle
+        buyRadio.addEventListener('change', updateButton);
+        sellRadio.addEventListener('change', updateButton);
+        
+        // Kaldıraç hesaplama fonksiyonu
+        const originalAmount = document.getElementById('OriginalAmount');
+        const borrowAmount = document.getElementById('BorrowAmount');
+        const leverageDisplay = document.getElementById('leverage');
+        
+        function calculateLeverage() {
+            const original = parseFloat(originalAmount.value) || 0;
+            const borrow = parseFloat(borrowAmount.value) || 0;
+            
+            if (original > 0) {
+                const leverage = ((original + borrow) / original).toFixed(2);
+                leverageDisplay.textContent = leverage + 'x';
+            } else {
+                leverageDisplay.textContent = '1.00x';
+            }
+        }
+        
+        originalAmount.addEventListener('input', calculateLeverage);
+        borrowAmount.addEventListener('input', calculateLeverage);
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".portfolio-row");
+        const rowsPerPage = 5;
+        let currentPage = 1;
+
+        function showPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach((row, index) => {
+                row.style.display = index >= start && index < end ? "table-row" : "none";
+            });
+
+            document.getElementById("prevPage").disabled = page === 1;
+            document.getElementById("nextPage").disabled = end >= rows.length;
+        }
+
+        // Pagination controls
+        const paginationContainer = document.createElement("div");
+        paginationContainer.innerHTML = `
+                <button id="prevPage" class="btn btn-sm btn-secondary">Previous</button>
+                <button id="nextPage" class="btn btn-sm btn-secondary">Next</button>
+            `;
+        paginationContainer.style.marginTop = "10px";
+
+        document.querySelector(".table-responsive").appendChild(paginationContainer);
+
+        document.getElementById("prevPage").addEventListener("click", function () {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        document.getElementById("nextPage").addEventListener("click", function () {
+            if (currentPage * rowsPerPage < rows.length) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        // Initial page display
+        showPage(currentPage);
+    });
+</script>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(() => {
+            // SignalR Hub bağlantısı kuruluyor
+            var connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7288/coinhub")
+                .build();
+
+            connection.start().catch((err) => console.error(err.toString()));
+
+            // ReceiveCoinUpdate event'ini dinliyoruz:
+            // currentPrice: güncel fiyat, symbol: güncellenen coin sembolü
+            connection.on("ReceiveCoinUpdate", (currentPrice, symbol) => {
+                // Profit/Loss hücrelerini güncelleyelim.
+                $(".profit-loss").each(function () {
+                    var $cell = $(this);
+                    if ($cell.data("symbol") === symbol) {
+                        if ($cell.hasClass("completed")) {
+                            return;
+                        }
+                        var entryPrice = parseFloat($cell.data("entry").replace(",", "."));
+                        var originalAmount = parseFloat($cell.attr("data-original").replace(",", "."));
+                        var borrowAmount = parseFloat($cell.attr("data-borrow").replace(",", "."));
+                        var isLong = $cell.data("islong").toString().toLowerCase() === "true";
+                        var totalPosition = originalAmount + borrowAmount;
+                        var profitLoss, coinAmount;
+
+                        if (isLong) {
+                            coinAmount = totalPosition / entryPrice;
+                            profitLoss = (currentPrice - entryPrice) * coinAmount;
+                        } else {
+                            coinAmount = totalPosition;
+                            profitLoss = (entryPrice - currentPrice) * coinAmount;
+                        }
+
+                        $cell.text(profitLoss.toFixed(2));
+                        $cell.css("color", profitLoss >= 0 ? "green" : "red");
+                    }
+                });
+            });
+
+            // Her 2 saniyede bir, tabloda yer alan benzersiz coin sembolleri için fiyat isteğinde bulunuyoruz.
+            setInterval(() => {
+                var symbols = [];
+                $(".profit-loss").each(function () {
+                    var symbol = $(this).data("symbol");
+                    if (symbols.indexOf(symbol) === -1) {
+                        symbols.push(symbol);
+                    }
+                });
+                symbols.forEach(symbol => {
+                    connection.invoke("SendCurrentPrice", symbol)
+                        .catch(err => console.error(err.toString()));
+                });
+            }, 2000);
+        });
+    </script>
+}

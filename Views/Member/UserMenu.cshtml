@@ -1,0 +1,137 @@
+﻿@using CoinTradeAppMVC.ViewModels
+
+@{
+    ViewData["Title"] = "UserMenu";
+}
+@section Scripts
+{
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+}
+@model UserViewModel
+
+<style>
+
+	body {
+        font-family: "Roboto", sans-serif;
+        background: #f5f5f5;
+        color: #333;
+    }
+
+	.user-menu-container {
+		background-color: #fff;
+		padding: 2rem;
+		border-radius: 8px;
+		margin: auto;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		width: 100%;
+		max-width: 400px;
+		margin-top: 52px;
+	}
+
+	.inputForm {
+		border: 1.5px solid #ecedec;
+		border-radius: 10px;
+		height: 40px;
+		width: 333px;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		transition: 0.2s ease-in-out;
+	}
+
+		.inputForm:focus-within {
+			border: 1.5px solid #ecedec;
+		}
+
+
+	.btn-update-password {
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		border: none;
+		border-radius: 20px;
+		color: white !important;
+		padding: 0.75rem 2rem;
+		font-weight: 600;
+		font-family: 'Inter', sans-serif;
+		letter-spacing: 0.5px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		width: 333px;
+		min-width: 200px;
+		height: 45px;
+		position: relative;
+		overflow: hidden;
+	}
+
+		.btn-update-password:hover {
+			box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+			background: linear-gradient(45deg, #0d94d4, #585be0);
+		}
+
+</style>
+
+<div class="col-md-6 offset-md-3">
+				<h2>@Localizer["PersonalInformation"]</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>@Localizer["Username"]</th>
+							<th>@Localizer["Email"]</th>
+							<th>@Localizer["PhoneNumber"]</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td>@Model.UserName</td>
+							<td>@Model.Email</td>
+							<td>@Model.PhoneNumber</td>
+						</tr>
+					</tbody>
+				</table>
+</div>
+
+<section>
+	<div class="user-menu-container">
+		<div class="row">
+			<div class="col-md-12">
+				<h4>@Localizer["UpdatePassword"]</h4>
+				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+					</diV>
+
+				@if (TempData["SuccessMessage"] != null)
+				{
+					<div class="alert alert-success" role="alert">
+						@TempData["SuccessMessage"]
+					</div>
+				}
+
+				<form asp-controller="Member" asp-action="PasswordChange" method="post">
+					<div class="mb-3">
+						<label for="Password" class="form-label" asp-for="Password"></label>
+						<input type="password" name="Password" class="inputForm" placeholder="@Localizer["YourPassword"]" required/>
+						<span class="text-danger" asp-validation-for="Password"></span>
+					</div>
+					<div class="mb-3">
+						<label for="NewPassword" class="form-label" asp-for="NewPassword"></label>
+						<input type="password" name="NewPassword" class="inputForm" placeholder="@Localizer["YourNewPassword"]" required/>
+						<span class="text-danger" asp-validation-for="NewPassword"></span>
+					</div>
+					<div class="mb-3">
+						<label for="NewPasswordConfirm" class="form-label" asp-for="NewPasswordConfirm"></label>
+						<input type="password" name="NewPasswordConfirm" class="inputForm" placeholder="@Localizer["ConfirmYourNewPassword"]" required/>
+						<span class="text-danger" asp-validation-for="NewPasswordConfirm"></span>
+					</div>
+
+					<div>
+						<button type="submit" class="btn-update-password">@Localizer["UpdatePassword"]</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+

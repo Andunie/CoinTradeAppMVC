@@ -1,0 +1,555 @@
+﻿@using CoinTradeAppMVC.ViewModels
+@using CoinTradeAppMVC.Controllers
+@{
+	ViewData["Title"] = "Home";
+}
+
+@model List<HomeCoinViewModel>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+	/* Main styles */
+	body {
+		font-family: 'Inter', sans-serif;
+		background-color: #f8fafc;
+	}
+	
+	.hero-section {
+		background: linear-gradient(45deg, #0f172a, #1e293b);
+		border-radius: 12px;
+		padding: 3rem 2rem;
+		color: white;
+		margin-bottom: 2rem;
+		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+		position: relative;
+		overflow: hidden;
+	}
+	
+	.hero-section::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 100%;
+		height: 100%;
+		background: url('/images/hero-pattern.svg') no-repeat;
+		background-size: cover;
+		opacity: 0.05;
+	}
+	
+	.hero-title {
+		font-weight: 800;
+		font-size: 3rem;
+		margin-bottom: 1.5rem;
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.hero-subtitle {
+		font-weight: 400;
+		opacity: 0.9;
+		margin-bottom: 2rem;
+		max-width: 600px;
+	}
+	
+	/* Coin list styles */
+	.coin-widget {
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+		overflow: hidden;
+	}
+	
+	.widget-header {
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+	
+	.coin-tabs {
+		display: flex;
+		gap: 1.5rem;
+	}
+	
+	.coin-tab {
+		border: none;
+		background: none;
+		font-weight: 600;
+		color: #64748b;
+		padding: 0 0 0.5rem 0;
+		position: relative;
+		cursor: pointer;
+	}
+	
+	.active-tab {
+		color: #0ea5e9;
+		border-bottom: 2px solid #0ea5e9;
+	}
+	
+	.view-all {
+		color: #64748b;
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	
+	.view-all:hover {
+		color: #0ea5e9;
+	}
+	
+	/* Coin item styles */
+	.crypto-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem 1.5rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		transition: all 0.2s;
+		text-decoration: none;
+		color: inherit;
+	}
+	
+	.crypto-item:hover {
+		background-color: #f1f5f9;
+	}
+	
+	.crypto-item:last-child {
+		border-bottom: none;
+	}
+	
+	.coin-logo {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		margin-right: 1rem;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	}
+	
+	.coin-name {
+		font-weight: 600;
+		color: #0f172a;
+	}
+	
+	.coin-symbol {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin-top: 0.25rem;
+	}
+	
+	.coin-price {
+		font-weight: 600;
+		font-size: 1rem;
+		color: #0f172a;
+		text-align: right;
+	}
+	
+	.coin-change {
+		font-size: 0.875rem;
+		font-weight: 500;
+		margin-top: 0.25rem;
+	}
+	
+	.text-success {
+		color: #10b981 !important;
+	}
+	
+	.text-danger {
+		color: #ef4444 !important;
+	}
+	
+	/* Market stats styles */
+	.market-stats {
+		background: white;
+		border-radius: 12px;
+		padding: 1.5rem;
+		margin-top: 2rem;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+	}
+	
+	.stats-title {
+		font-weight: 700;
+		font-size: 1.25rem;
+		margin-bottom: 1.25rem;
+		color: #0f172a;
+	}
+	
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 1rem;
+	}
+	
+	.stat-card {
+		background: linear-gradient(45deg, #f1f5f9, #f8fafc);
+		border-radius: 8px;
+		padding: 1.25rem;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+	}
+	
+	.stat-label {
+		font-size: 0.875rem;
+		color: #64748b;
+		margin-bottom: 0.5rem;
+	}
+	
+	.stat-value {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: #0f172a;
+	}
+	
+	/* News ticker styles */
+	.news-ticker {
+		background: white;
+		border-radius: 12px;
+		padding: 1rem 1.5rem;
+		margin-top: 2rem;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+		overflow: hidden;
+		position: relative;
+	}
+	
+	.ticker-label {
+		font-weight: 600;
+		color: #0ea5e9;
+		margin-right: 1rem;
+		white-space: nowrap;
+		display: inline-block;
+		position: relative;
+		padding-right: 1.5rem;
+	}
+	
+	.ticker-label::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		height: 70%;
+		width: 1px;
+		background: rgba(0, 0, 0, 0.1);
+	}
+	
+	.ticker-content {
+		display: inline-block;
+		white-space: nowrap;
+		animation: ticker 30s linear infinite;
+	}
+	
+	.ticker-item {
+		display: inline-block;
+		margin-right: 2rem;
+		color: #334155;
+	}
+	
+	@@keyframes ticker {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-100%);
+		}
+	}
+	
+	/* CTA Sections */
+	.cta-section {
+		background: white;
+		border-radius: 12px;
+		padding: 2rem;
+		margin-top: 2rem;
+		display: flex;
+		align-items: center;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+	}
+	
+	.cta-content {
+		flex: 1;
+	}
+	
+	.cta-title {
+		font-weight: 700;
+		font-size: 1.5rem;
+		color: #0f172a;
+		margin-bottom: 1rem;
+	}
+	
+	.cta-image {
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	}
+	
+	.cta-image img {
+		display: block;
+		max-width: 100%;
+		height: auto;
+	}
+	
+	.btn-signup {
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		border: none;
+		border-radius: 8px;
+		color: white !important;
+		padding: 0.75rem 2rem;
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		min-width: 200px;
+		height: 48px;
+		position: relative;
+		overflow: hidden;
+		text-decoration: none;
+	}
+	
+	.btn-signup:hover {
+		box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+		background: linear-gradient(45deg, #0d94d4, #585be0);
+	}
+	
+	.btn-signup::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+		transition: 0.5s;
+	}
+	
+	.btn-signup:hover::after {
+		left: 100%;
+	}
+	
+	/* Responsive adjustments */
+	@@media (max-width: 991px) {
+		.hero-title {
+			font-size: 2.5rem;
+		}
+		
+		.cta-section {
+			flex-direction: column;
+		}
+		
+		.cta-content {
+			margin-bottom: 2rem;
+			text-align: center;
+		}
+	}
+	
+	@@media (max-width: 767px) {
+		.hero-title {
+			font-size: 2rem;
+		}
+		
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<div class="container mt-4">
+	<!-- Hero Section -->
+	<section class="hero-section">
+		<div class="row align-items-center">
+			<div class="col-lg-7">
+				<h1 class="hero-title">@Localizer["WelcomeMessage"]</h1>
+				<p class="hero-subtitle">Trade cryptocurrencies with confidence on our secure platform. Start your journey in the world of digital assets today.</p>
+				<a href="/Home/Signup" class="btn-signup">
+					<i class="fas fa-user-plus"></i>
+					@Localizer["SignUpButtonMessage"]
+				</a>
+			</div>
+			<div class="col-lg-5 d-none d-lg-block">
+				<img src="~/images/coin-svgrepo-com.svg" alt="Dashboard Overview" class="img-fluid" width="200" height="200" style="margin-left:118px" />
+			</div>
+		</div>
+	</section>
+	
+	<!-- Coin List Widget -->
+	<div class="row">
+		<div class="col-lg-7">
+			<div class="coin-widget">
+				<div class="widget-header d-flex justify-content-between align-items-center">
+					<div class="coin-tabs">
+						<button class="coin-tab active-tab">@Localizer["PopularTab"]</button>
+						<button class="coin-tab">@Localizer["NewListingTab"]</button>
+					</div>
+					<a asp-controller="Member" asp-action="ViewAllCoins" class="view-all">
+						@Localizer["ViewAllCoins"]
+						<i class="fas fa-chevron-right fa-xs ms-1"></i>
+					</a>
+				</div>
+				
+				@foreach (var coin in Model)
+				{
+					<a asp-controller="Member" asp-action="CoinData" asp-route-symbol="@coin.Symbol.ToUpper()USDT" 
+					   class="crypto-item" data-symbol="@coin.Symbol.ToUpper()">
+						<div class="d-flex align-items-center">
+							<img src="@coin.LogoUrl" alt="@coin.Name logo" class="coin-logo">
+							<div>
+								<div class="coin-name">@coin.Symbol</div>
+								<div class="coin-symbol">@coin.Name</div>
+							</div>
+						</div>
+						<div>
+							<div class="coin-price current-price" data-price="@coin.Price.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))">
+								@Localizer["LoadingMessage"]
+							</div>
+							<div class="coin-change change @(coin.ChangePercent >= 0 ? "text-success" : "text-danger")" 
+								 data-change="@coin.ChangePercent.ToString("F2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))">
+								@Localizer["LoadingMessage"]
+							</div>
+						</div>
+					</a>
+				}
+			</div>
+		</div>
+		
+		<div class="col-lg-5">
+			<!-- Market Stats Cards -->
+			<div class="market-stats">
+				<h3 class="stats-title">@Localizer["MarketStatisticsMessage"]</h3>
+				<div class="stats-grid">
+					<div class="stat-card">
+						<div class="stat-label">@Localizer["TotalMarketCapMessage"]</div>
+						<div class="stat-value">1.8T$</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-label">@Localizer["24hVolumeMessage"]</div>
+						<div class="stat-value">+3.00%</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-label">@Localizer["DominanceMessage"]</div>
+						<div class="stat-value">BTC 50% | ETH 13%</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- News Ticker -->
+	<div class="news-ticker">
+		<span class="ticker-label">Latest News</span>
+		<div class="ticker-content">
+			<span class="ticker-item">Bitcoin price surges as institutional investors show interest.</span>
+			<span class="ticker-item">Ethereum network upgrades to improve scalability.</span>
+			<span class="ticker-item">Binance announces new security measures for user funds.</span>
+			<span class="ticker-item">DeFi platforms see increased activity in the last quarter.</span>
+		</div>
+	</div>
+	
+	<!-- CTA Section - Trade Anywhere -->
+	<section class="cta-section">
+		<div class="cta-content">
+			<h2 class="cta-title">@Localizer["TradeAnywhereAnytimeMessage"]</h2>
+			<p class="mb-4">Access your portfolio, track market movements, and execute trades from anywhere in the world. Our platform is optimized for both desktop and mobile devices.</p>
+		</div>
+		<div class="cta-image d-none d-md-block">
+			<img src="/images/devices.png" alt="Trading on multiple devices" class="img-fluid" style="max-height: 200px;">
+		</div>
+	</section>
+	
+	<!-- CTA Section - Start Trading -->
+	<section class="cta-section">
+		<div class="cta-image d-none d-md-block" style="margin-right: 2rem;">
+			<img src="/images/coin-detail.png" alt="Coin Detail" class="img-fluid" style="max-height: 240px; border-radius: 8px;">
+		</div>
+		<div class="cta-content">
+			<h2 class="cta-title">@Localizer["FundYourAccountAndStartTradingMessage"]</h2>
+			<p class="mb-4">Deposit funds quickly and start trading with just a few clicks. We offer competitive fees and a wide range of supported cryptocurrencies.</p>
+			<a href="/Home/Signup" class="btn-signup">
+				<i class="fas fa-rocket"></i>
+				Start Trading Now
+			</a>
+		</div>
+	</section>
+</div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+@section Scripts
+ {
+	<script type="text/javascript">
+		$(document).ready(() => {
+			const connection = new signalR.HubConnectionBuilder()
+				.withUrl("https://localhost:7288/coinhub")
+				.withAutomaticReconnect()
+				.configureLogging(signalR.LogLevel.Information)
+				.build();
+
+			connection.onreconnecting(error => {
+				console.log('Reconnecting...', error);
+			});
+
+			connection.onreconnected(() => {
+				console.log('Reconnected!');
+			});
+
+			connection.onclose(() => {
+				console.log('Connection closed. Reconnecting...');
+			});
+
+			connection.on("ReceiveIndexHomeCoinData", (coins) => {
+				coins.forEach((coin) => {
+					const element = $(`.crypto-item[data-symbol="${coin.symbol}"]`);
+					if (element.length) {
+						const priceElement = element.find(".coin-price");
+						const changeElement = element.find(".coin-change");
+
+						// Sabit en-US formatında para birimi
+						const formattedPrice = new Intl.NumberFormat('en-US', {
+							style: 'currency',
+							currency: 'USD',
+						}).format(coin.price);
+
+						// Sabit %1000 formatında değişim
+						const formattedChangePercent = new Intl.NumberFormat('en-US', {
+							style: 'decimal',
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						}).format(coin.changePercent * 1000) + '%';
+
+						// Verileri güncelle
+						priceElement.text(formattedPrice);
+						changeElement.text(formattedChangePercent);
+
+						// Yüzde değişim için renk ayarı
+						changeElement.removeClass("text-success text-danger");
+						changeElement.addClass(coin.changePercent >= 0 ? "text-success" : "text-danger");
+					}
+				});
+			});
+
+			const startConnection = async () => {
+				try {
+					await connection.start();
+					console.log("Connected to SignalR hub");
+					setInterval(() => {
+						console.log("Requesting coin data...");
+						connection.invoke("SendHomeCoinData")
+							.catch(err => console.error("Error fetching coin data:", err));
+					}, 2000);
+				} catch (err) {
+					console.error("Connection failed:", err);
+					setTimeout(startConnection, 5000); // Retry connection
+				}
+			};
+
+			startConnection();
+			
+			// Tab switching functionality
+			$('.coin-tab').on('click', function() {
+				$('.coin-tab').removeClass('active-tab');
+				$(this).addClass('active-tab');
+			});
+		});
+	</script>
+}

@@ -1,0 +1,208 @@
+﻿@using CoinTradeAppMVC.Web.ViewModels
+
+@{
+	ViewData["Title"] = "SignUp";
+}
+
+<style>
+
+	.form-control {
+		border-radius: 25px;
+	}
+
+	.btn-signup {
+		background: linear-gradient(45deg, #0ea5e9, #6366f1);
+		border: none;
+		border-radius: 20px;
+		color: white !important;
+		padding: 0.75rem 2rem;
+		font-weight: 600;
+		font-family: 'Inter', sans-serif;
+		letter-spacing: 0.5px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		width: 333px;
+		min-width: 200px;
+		height: 45px;
+		position: relative;
+		overflow: hidden;
+	}
+
+		.btn-signup:hover {
+			box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+			background: linear-gradient(45deg, #0d94d4, #585be0);
+		}
+
+	.btn-signup::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.15), transparent );
+		transition: 0.5s;
+	}
+
+		.btn-signup .spinner { /* Keep this as is, it's a child of .btn-login */
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			border: 2px solid transparent;
+			border-top-color: #fff;
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+			display: none; /* Initially hidden */
+		}
+
+		.btn-signup.loading .button-text { /* Target .loading class on .btn-login */
+			visibility: hidden; /* Hide text when loading */
+		}
+
+		.btn-signup.loading .spinner { /* Target .loading class on .btn-login */
+			display: block; /* Show spinner when loading */
+		}
+
+	.signup-container {
+		background-color: #fff;
+		padding: 2rem;
+		border-radius: 8px;
+		margin: auto;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		width: 100%;
+		max-width: 400px;
+		margin-top: 108px;
+	}
+
+		.signup-container h2 {
+			font-weight: bold;
+			text-align: center;
+			margin-bottom: 1.5rem;
+			color: #333;
+		}
+
+	.inputForm {
+		border: 1.5px solid #ecedec;
+		border-radius: 12px;
+		height: 40px;
+		width: 333px;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		transition: 0.2s ease-in-out;
+	}
+
+		.inputForm:focus-within {
+			border: 1.5px solid #ecedec;
+		}
+
+	.form-control {
+		border-radius: 25px;
+	}
+
+	.already-have-account {
+		display: block;
+		margin-top: 1rem;
+		text-align: right;
+		color: #0d94d4;
+		text-decoration: none;
+	}
+
+		.already-have-account:hover {
+			color: #0a75a8;
+		}
+
+</style>
+
+
+@model SignUpViewModel
+@section Scripts
+{
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+<section>
+	<div class="signup-container">
+		<div class="row">
+			<div>
+				<h2>@Localizer["SignUp"]</h2>
+
+				@if (TempData["SuccessMessage"] != null)
+				{
+					<div class="alert alert-info" role="alert">
+						@TempData["SuccessMessage"]
+					</div>
+				}
+
+				<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+				</div>
+
+				<form asp-controller="Home" asp-action="SignUp" method="post">
+					<div class="mb-3">
+						<label for="userName" class="col-md-4 form-label" asp-for="UserName"></label>
+						<input asp-for="UserName" class="inputForm" placeholder="@Localizer["EnterYourUsername"]" />
+						<span class="text-danger" asp-validation-for="UserName"> </span>
+					</div>
+					<div class="mb-3">
+						<label for="Email" class="col-md-4 form-label" asp-for="Email"></label>
+						<input asp-for="Email" class="inputForm" placeholder="@Localizer["EnterYourEmail"]" />
+						<span class="text-danger" asp-validation-for="Email"> </span>
+					</div>
+					<div class="mb-3">
+						<label for="Phone" class="col-md-4 form-label" asp-for="Phone"></label>
+						<input asp-for="Phone" class="inputForm" placeholder="@Localizer["EnterYourPhoneNumber"]" />
+						<span class="text-danger" asp-validation-for="Phone"> </span>
+					</div>
+					<div class="mb-3">
+						<label for="Password" class="col-md-4 form-label" asp-for="Password"></label>
+						<input type="password" asp-for="Password" class="inputForm" placeholder="@Localizer["EnterYourPassword"]" />
+						<span class="text-danger" asp-validation-for="Password"> </span>
+					</div>
+					<div class="mb-3">
+						<label for="PasswordConfirm" class="col-md-8 form-label" asp-for="PasswordConfirm"></label>
+						<input type="password" asp-for="PasswordConfirm" class="inputForm" placeholder="@Localizer["EnterYourPassword"]" />
+						<span class="text-danger" asp-validation-for="PasswordConfirm"> </span>
+					</div>
+					<div class="col-md-12 mb-2">
+						<div>
+							<a class="already-have-account" asp-controller="Home" asp-action="SignIn">@Localizer["AlreadyHaveAccount"]</a>
+						</div>
+					</div>
+
+					<div class="mt-3">
+						<button id="loadingButton" type="submit" class="btn-signup">
+							<span class="button-text">@Localizer["SignUp"]</span>
+							<span class="spinner"></span>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</section>
+
+<script>
+	// For Loading Animation :
+
+	document.addEventListener('DOMContentLoaded', function () {
+		const loadingButton = document.getElementById('loadingButton');
+
+		loadingButton.addEventListener('click', function () {
+			// Add the 'loading' class to the button when clicked
+			loadingButton.classList.add('loading');
+
+			// Simulate loading delay (replace with your actual logic, e.g., AJAX request)
+			setTimeout(function () {
+				// After the simulated loading, remove the 'loading' class
+				loadingButton.classList.remove('loading');
+			}, 5000); // 5 seconds loading simulation - adjust as needed
+		});
+	});
+
+
+</script>

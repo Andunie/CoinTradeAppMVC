@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BalanceIsNotEnoughForOrderMessage" xml:space="preserve">
+    <value>Girdiğiniz emir için yeterli bakiyeniz bulunmamaktadır!</value>
+  </data>
+  <data name="BalanceisNotEnoughForThisOrderMessage" xml:space="preserve">
+    <value>Bakiyeniz bu emir için yetersiz!</value>
+  </data>
+  <data name="CashAccountNotFoundMessage" xml:space="preserve">
+    <value>Nakit hesabı bulunmadı!</value>
+  </data>
+  <data name="EmailNotSendMessage" xml:space="preserve">
+    <value>Email gönderilirken bir hata oluştu:</value>
+  </data>
+  <data name="EmailSendSuccessfullyMessage" xml:space="preserve">
+    <value>Email başarıyla gönderildi! Size en kısa sürede geri dönüş yapacağız.</value>
+  </data>
+  <data name="FailedRetrievePriceMessage" xml:space="preserve">
+    <value>Fiyat verisi çekilemedi!</value>
+  </data>
+  <data name="InsufficientBalanceForMarginMessage" xml:space="preserve">
+    <value>Bu kaldıraçlı işlem için yeterli bakiyeniz bulunmamaktadır!</value>
+  </data>
+  <data name="InsufficientBalanceMessage" xml:space="preserve">
+    <value>Yetersiz bakiye!</value>
+  </data>
+  <data name="InsufficientCoinBalanceinPortfolioForOrderMessage" xml:space="preserve">
+    <value>Bu emir için portföyünüzde yeterli varlık yok!</value>
+  </data>
+  <data name="InsufficientCoinBalanceInPortfolioMessage" xml:space="preserve">
+    <value>Portföyünüzde bu kripto para yeterli değil ya da bulunmamaktadır!</value>
+  </data>
+  <data name="InsufficientCollateralBalanceForMarginMessage" xml:space="preserve">
+    <value>Bu teminat için yeterli bakiyeniz yoktur!</value>
+  </data>
+  <data name="InvalidDataProvidedMessage" xml:space="preserve">
+    <value>Geçersiz veri sağlandı!</value>
+  </data>
+  <data name="MarginHasBeenCreatedSuccesfullyMessage" xml:space="preserve">
+    <value>Kaldıraçlı işlem girişi başarıyla gerçekleşti!</value>
+  </data>
+  <data name="MarginHasBeenDeletedSuccessfullyMessage" xml:space="preserve">
+    <value>Kaldıraçlı işlem başarıyla silindi!</value>
+  </data>
+  <data name="MarginNotFoundorYoureNotAuthorizedToDeleteMessage" xml:space="preserve">
+    <value>Kaldıraçlı işlem bulunamadı ya da silmek için yetliye sahip değilsiniz!</value>
+  </data>
+  <data name="OrderHasBeenCreatedSuccessfullyMessage" xml:space="preserve">
+    <value>Emir girişi başarıyla gerçekleşmiştir!</value>
+  </data>
+  <data name="OrderHasBeenDeletedSuccessfullyMessage" xml:space="preserve">
+    <value>Emir başarıyla silinmiştir!</value>
+  </data>
+  <data name="OrderHasBeenEditedSuccessfullyMessage" xml:space="preserve">
+    <value>Emir başarıyla güncellenmiştir!</value>
+  </data>
+  <data name="OrderNotFoundMessage" xml:space="preserve">
+    <value>Emir bulunamadı!</value>
+  </data>
+  <data name="OrderNotFoundorNotAuthorizedtoDeleteMessage" xml:space="preserve">
+    <value>Emir bulunamadı ya da silmek için yetkiye sahip değilsiniz!</value>
+  </data>
+  <data name="PasswordDoesNotMatchWithOldPasswordMessage" xml:space="preserve">
+    <value>Şifreniz eski şifreniz ile eşleşmiyor!</value>
+  </data>
+  <data name="PasswordHasBeenChangedSuccessfulyMessage" xml:space="preserve">
+    <value>Şifreniz başarıyla güncellendi!</value>
+  </data>
+  <data name="PleaseFillOutTheFormCompletelyMessage" xml:space="preserve">
+    <value>Lütfen formu eksiksiz doldurun.</value>
+  </data>
+  <data name="TransactionFailedMessage" xml:space="preserve">
+    <value>İşlem başarısız!</value>
+  </data>
+  <data name="TransactionSuccessfulMessage" xml:space="preserve">
+    <value>İşlem başarılı!</value>
+  </data>
+  <data name="TransferCompletedSuccessfully" xml:space="preserve">
+    <value>Transfer başarıyla gerçekleşti!</value>
+  </data>
+  <data name="UserCashDataNotFoundMessage" xml:space="preserve">
+    <value>Nakit bulunamadı!</value>
+  </data>
+  <data name="UserMarginCashAccountNotFoundMessage" xml:space="preserve">
+    <value>Kaldıraçlı işlem bakiyeniz bulunamadı!</value>
+  </data>
+  <data name="UserNotFoundMessage" xml:space="preserve">
+    <value>Kullanıcı bulunamadı!</value>
+  </data>
+</root>

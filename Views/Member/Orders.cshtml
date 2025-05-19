@@ -1,0 +1,580 @@
+﻿@using CoinTradeAppMVC.ViewModels
+
+@{
+    ViewData["Title"] = "Orders";
+    var coins = ViewBag.Coins;
+}
+
+@model OrdersPageViewModel
+
+<title>Orders</title>
+
+<style>
+
+    body {
+        font-family: "Roboto", sans-serif;
+        background: #f5f5f5;
+        color: #333;
+    }
+
+    /* Tabloyu içeren kutu */
+    .orders-container {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+
+    /* Tablo stilleri */
+    .order-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        margin: 0;
+        /* table-layout: fixed; */
+    }
+
+        .order-table th {
+            color: #64748b;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+        }
+
+        .order-table td {
+            padding: 1.25rem 1.5rem;
+            background: #ffffff;
+            border-bottom: 2px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+    /* Hover efekti kaldırıldı */
+    /* .order-table tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            } */
+
+    .coin-badge {
+        background: #f1f5f9;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    .status-active {
+        background: #10b981;
+    }
+
+    .status-completed {
+        background: #64748b;
+    }
+
+    .btn-gold {
+        background: linear-gradient(45deg, #0ea5e9, #6366f1);
+        border: none;
+        border-radius: 8px;
+        color: white !important;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        width: auto;
+        min-width: 150px;
+        height: 48px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-gold:hover {
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            background: linear-gradient(45deg, #0d94d4, #585be0);
+        }
+
+        .btn-gold::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.15), transparent );
+            transition: 0.5s;
+        }
+
+    .alert-position {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        min-width: 300px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    /* Modern Modal Stili */
+    .modal .modal-content {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        border: none;
+        overflow: hidden;
+    }
+
+    /* Modal Header */
+    .modal .modal-header {
+        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        color: #fff;
+        border-bottom: none;
+        padding: 1.5rem;
+        position: relative;
+    }
+
+    .modal .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0;
+        color: #fff;
+    }
+
+    .modal .btn-close {
+        color: white;
+        opacity: 1;
+        filter: brightness(0) invert(1);
+        box-shadow: none;
+    }
+
+    /* Modal Body */
+    .modal .modal-body {
+        padding: 2rem;
+    }
+
+    /* Form Elemanları */
+    .modal .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .modal .form-control,
+    .modal .form-select {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem;
+        height: auto;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+        color: #334155;
+    }
+
+    .modal .form-control:focus,
+    .modal .form-select:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        background-color: #fff;
+    }
+
+    .modal .form-control::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Validation Uyarıları */
+    .modal .text-danger {
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .modal .alert-danger {
+        background-color: #fee2e2;
+        border: none;
+        color: #b91c1c;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Buy/Sell Select Stilleri */
+    .modal select[name="NewOrder.IsBuyOrder"] {
+        font-weight: 600;
+    }
+    
+    .modal select[name="NewOrder.IsBuyOrder"] option[value="true"] {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    
+    .modal select[name="NewOrder.IsBuyOrder"] option[value="false"] {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    
+    /* Input Group Stilleri */
+    .modal .input-group-text {
+        background-color: #f1f5f9;
+        border: 2px solid #e2e8f0;
+        border-right: none;
+        border-radius: 10px 0 0 10px;
+        color: #64748b;
+    }
+    
+    .modal .input-group .form-control {
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    /* Modal Footer */
+    .modal .modal-footer {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #f1f5f9;
+        background-color: #f8fafc;
+    }
+    
+    .modal .btn-secondary {
+        background-color: #e2e8f0;
+        border: none;
+        color: #475569;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .modal .btn-secondary:hover {
+        background-color: #cbd5e1;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<section class="container">
+    <!-- Başlık ve Buton (Kutu dışında) -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <h3 class="mb-0">@Localizer["Orders"]</h3>
+        <button type="button" class="btn-gold" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+            <i class="fas fa-plus me-2"></i>@Localizer["NewOrder"]
+        </button>
+    </div>
+
+    <!-- Tabloyu içeren kutu -->
+    <div class="orders-container">
+        <!-- Alerts -->
+        <div class="px-4 pt-3">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["DeleteErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["DeleteErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["EditErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["EditErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["EditSuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["EditSuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["EditErrorMessageInvalid"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["EditErrorMessageInvalid"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["BalanceErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["BalanceErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["NewOrderErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["NewOrderErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+        </div>
+
+        <!-- Orders Table -->
+        <div class="px-4 pb-4">
+            <div class="table-responsive">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Coin"]</th>
+                            <th>@Localizer["TargetPrice"]</th>
+                            <th>@Localizer["Quantity"]</th>
+                            <th>@Localizer["Type"]</th>
+                            <th>@Localizer["Status"]</th>
+                            <th>@Localizer["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders!)
+                        {
+                            <tr class="portfolio-row">
+                                <td>
+                                    <div class="coin-badge">
+                                        <span class="status-indicator @(order.IsCompleted ? "status-completed" : "status-active")"></span>
+                                        @order.CoinSymbol
+                                        <span class="text-muted small ms-2 coin-update" data-symbol="@order.CoinSymbol">
+                                            ($@order.CoinSymbol)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>@order.TargetPrice.ToString("C2", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))</td>
+                                <td>@order.Quantity.ToString("0.######")</td>
+                                <td>
+                                    <span class="badge @(order.IsBuyOrder ? "bg-success" : "bg-danger")">
+                                        @(order.IsBuyOrder ? "BUY" : "SELL")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (order.IsCompleted)
+                                    {
+                                        <span class="text-muted">@Localizer["Completed"]</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">@Localizer["Active"]</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        @if (!order.IsCompleted)
+                                        {
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editOrderModal-@order.Id">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        }
+                                        <form asp-controller="Member" asp-action="DeleteOrder" method="post" class="d-inline">
+                                            <input type="hidden" name="orderId" value="@order.Id" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            @(order.IsCompleted ? "disabled" : "")
+                                                    onclick="return confirm('Are you sure?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editOrderModal-@order.Id" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form asp-controller="Member" asp-action="EditOrder" method="post">
+                                            <input type="hidden" name="orderId" value="@order.Id">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">@Localizer["EditOrder"]</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label for="CoinSymbol" class="form-label" asp-for="NewOrder.CoinSymbol">@Localizer["CoinSymbol"]</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                                                            <input type="text" asp-for="NewOrder.CoinSymbol" class="form-control" readonly />
+                                                        </div>
+                                                        <span class="text-danger" asp-validation-for="NewOrder.CoinSymbol"></span>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="TargetPrice" class="form-label" asp-for="NewOrder.TargetPrice">@Localizer["TargetPrice"]</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                                            <input asp-for="NewOrder.TargetPrice" class="form-control" step="0.000001" min="0.000001" />
+                                                        </div>
+                                                        <span class="text-danger" asp-validation-for="NewOrder.TargetPrice"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label for="Quantity" class="form-label" asp-for="NewOrder.Quantity">@Localizer["Quantity"]</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-balance-scale"></i></span>
+                                                            <input asp-for="NewOrder.Quantity" class="form-control" step="0.000001" min="0.000001" />
+                                                        </div>
+                                                        <span class="text-danger" asp-validation-for="NewOrder.Quantity"></span>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="IsBuyOrder" class="form-label" asp-for="NewOrder.IsBuyOrder">@Localizer["OrderType"]</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-exchange-alt"></i></span>
+                                                            <select asp-for="NewOrder.IsBuyOrder" class="form-select">
+                                                                <option value="true">@Localizer["Buy"]</option>
+                                                                <option value="false">@Localizer["Sell"]</option>
+                                                            </select>
+                                                        </div>
+                                                        <span class="text-danger" asp-validation-for="NewOrder.IsBuyOrder"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                                                <button type="submit" class="btn-gold">
+                                                    <i class="fas fa-save me-2"></i>@Localizer["SaveChanges"]
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Create Order Modal -->
+<div class="modal fade" id="createOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-controller="Member" asp-action="Orders" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["CreateNewOrder"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any())) {
+                        <div class="alert alert-danger" asp-validation-summary="ModelOnly" role="alert"></div>
+                    }
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="CoinSymbol" class="form-label" asp-for="NewOrder.CoinSymbol">@Localizer["CoinSymbol"]</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                                <select asp-for="NewOrder.CoinSymbol"
+                                        asp-items="coins"
+                                        class="form-select">
+                                    <option value="">@Localizer["SelectCoin"]</option>
+                                </select>
+                            </div>
+                            <span class="text-danger" asp-validation-for="NewOrder.CoinSymbol"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="TargetPrice" class="form-label" asp-for="NewOrder.TargetPrice">@Localizer["TargetPrice"]</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input type="number" asp-for="NewOrder.TargetPrice" class="form-control" step="0.000001" min="0.000001" id="targetPrice" placeholder="Enter target price" />
+                            </div>
+                            <span class="text-danger" asp-validation-for="NewOrder.TargetPrice"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="Quantity" class="form-label" asp-for="NewOrder.Quantity">@Localizer["Quantity"]</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-balance-scale"></i></span>
+                                <input asp-for="NewOrder.Quantity" class="form-control" step="0.000001" min="0.000001" placeholder="Enter quantity" />
+                            </div>
+                            <span class="text-danger" asp-validation-for="NewOrder.Quantity"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="IsBuyOrder" class="form-label" asp-for="NewOrder.IsBuyOrder">@Localizer["OrderType"]</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-exchange-alt"></i></span>
+                                <select asp-for="NewOrder.IsBuyOrder" class="form-select">
+                                    <option value="true">@Localizer["Buy"]</option>
+                                    <option value="false">@Localizer["Sell"]</option>
+                                </select>
+                            </div>
+                            <span class="text-danger" asp-validation-for="NewOrder.IsBuyOrder"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Close"]</button>
+                    <button type="submit" class="btn-gold">
+                        <i class="fas fa-plus me-2"></i>@Localizer["CreateOrder"]
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+@section Scripts
+{
+	<script type="text/javascript">
+		$(document).ready(() => {
+			var connection = new signalR.HubConnectionBuilder()
+				.withUrl("https://localhost:7288/coinhub").build();
+
+			$("#constatus").text(connection.state);
+
+			connection.start().then(() => {
+				$("#constatus").text(connection.state);
+
+				setInterval(() => {
+					// Her bir Symbol için fiyat isteği gönder
+					$(".coin-update").each(function () {
+						const symbol = $(this).data("symbol");
+						connection.invoke("SendCurrentPrice", symbol);
+					});
+				}, 2000); // 2 saniye
+
+			}).catch((err) => { console.log(err) });
+
+			connection.on("ReceiveCoinUpdate", (currentPrice, symbol) => {
+				const currentPriceCell = $(`.coin-update[data-symbol="${symbol}"]`);
+				currentPriceCell.text(parseFloat(currentPrice).toFixed(2));
+			});
+		});
+
+		document.getElementById("targetPrice").addEventListener("change", function () {
+			// Kullanıcı virgül kullandıysa, bunu nokta ile değiştir.
+			this.value = this.value.replace(',', '.');
+		});
+
+	</script>
+}

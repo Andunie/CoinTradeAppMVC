@@ -1,0 +1,168 @@
+﻿@inject IViewLocalizer Localizer
+
+<ul class="navbar-nav me-auto d-flex align-items-center">
+    <!-- Cüzdan Simgesi -->
+    <li class="nav-item dropdown me-3">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 5c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14z"></path>
+                <path d="M16 2v4"></path>
+                <path d="M8 2v4"></path>
+                <path d="M2 10h20"></path>
+            </svg>
+        </a>
+        <ul class="dropdown-menu bg-dark-blue border-crypto">
+            <li>
+                <a class="dropdown-item text-hover-gradient" asp-controller="Member" asp-action="TransferCoin">
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                    @Localizer["Deposit"]
+                </a>
+            </li>
+        </ul>
+    </li>
+    
+    <!-- Dil Değiştirme İkonu ve Dropdown Menüsü -->
+    <li class="nav-item dropdown me-2">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+        </a>
+        <ul class="dropdown-menu bg-dark-blue border-crypto">
+            <li><a class="dropdown-item text-hover-gradient" asp-controller="Home" asp-action="SetLanguage" asp-route-culture="en-US" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">English</a></li>
+            <li><a class="dropdown-item text-hover-gradient" asp-controller="Home" asp-action="SetLanguage" asp-route-culture="tr-TR" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">Türkçe</a></li>
+        </ul>
+    </li>
+
+    <!-- Kullanıcı Menüsü -->
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                @User.Identity.Name
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end bg-dark-blue border-crypto">
+                <li>
+                    <a class="dropdown-item text-hover-gradient" asp-controller="Member" asp-action="UserMenu">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        @Localizer["Profile"]
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider border-crypto"></li>
+                <li>
+                    <a class="dropdown-item text-hover-gradient" asp-controller="Member" asp-action="Logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        @Localizer["Logout"]
+                    </a>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <div class="d-flex gap-2">
+            <a class="btn-login-nav" asp-controller="Home" asp-action="SignIn">
+                <span>@Localizer["Login"]</span>
+            </a>
+            <a class="btn-signup-nav" asp-controller="Home" asp-action="SignUp">
+                <span>@Localizer["Sign Up"]</span>
+            </a>
+        </div>
+    }
+</ul>
+
+<style>
+    .btn-login-nav, .btn-signup-nav {
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-login-nav {
+        background: rgba(148, 163, 184, 0.1);
+        color: #94a3b8 !important;
+        border: 1px solid #334155;
+    }
+
+        .btn-login-nav:hover {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9 !important;
+            border-color: #0ea5e9;
+            transform: translateY(-1px);
+        }
+
+    .btn-signup-nav {
+        background: linear-gradient(45deg, #0ea5e9, #6366f1);
+        color: white !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-signup-nav:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-signup-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.2), transparent );
+            transition: 0.5s;
+        }
+
+        .btn-signup-nav:hover::before {
+            left: 100%;
+        }
+
+    /* Dropdown Styling */
+    .bg-dark-blue {
+        background: #1e293b !important;
+    }
+
+    .border-crypto {
+        border: 1px solid #334155 !important;
+    }
+
+    .dropdown-item.text-hover-gradient {
+        color: #94a3b8 !important;
+        transition: all 0.3s ease;
+    }
+
+        .dropdown-item.text-hover-gradient:hover {
+            background: linear-gradient(45deg, rgba(14, 165, 233, 0.1), transparent) !important;
+            color: #0ea5e9 !important;
+            transform: translateX(8px);
+            box-shadow: -4px 0 12px rgba(14, 165, 233, 0.15);
+        }
+
+        .dropdown-item.text-hover-gradient svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item.text-hover-gradient:hover svg {
+            stroke: #0ea5e9;
+        }
+</style>

@@ -1,0 +1,397 @@
+﻿@using CoinTradeAppMVC.ViewModels
+@model TransferViewModel
+
+@{
+    ViewData["Title"] = "TransferCoin";
+    var warningMessage = TempData["ErrorMessage"];
+    var successMessage = TempData["SuccessMessage"];
+    var coins = ViewBag.Coins;
+}
+
+<style>
+    .deposit-container {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-top: 2rem;
+        padding: 0;
+        position: relative;
+    }
+    
+    .deposit-header {
+        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        color: #fff;
+        padding: 2rem;
+        position: relative;
+    }
+    
+    .deposit-header h2 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .deposit-header h2 svg {
+        margin-right: 0.75rem;
+    }
+    
+    .deposit-header p {
+        margin-top: 0.5rem;
+        opacity: 0.9;
+        max-width: 600px;
+    }
+    
+    .deposit-body {
+        padding: 2.5rem;
+        display: flex;
+    }
+    
+    .deposit-form {
+        flex: 1;
+        max-width: 500px;
+    }
+    
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-control, .form-select {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem;
+        width: 100%;
+        height: auto;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+        color: #334155;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        background-color: #fff;
+        outline: none;
+    }
+    
+    .input-group {
+        position: relative;
+    }
+    
+    .input-group-text {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-weight: 600;
+    }
+    
+    .text-danger {
+        color: #ef4444;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    .btn-transfer {
+        background: linear-gradient(45deg, #0ea5e9, #6366f1);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        padding: 0.9rem 2.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-transfer:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-transfer::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    
+    .btn-transfer:hover::after {
+        left: 100%;
+    }
+    
+    .deposit-image {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 2rem;
+    }
+    
+    .deposit-image img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .deposit-facts {
+        margin-top: 3rem;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 2rem;
+    }
+    
+    .facts-title {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+    }
+    
+    .facts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .fact-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: flex-start;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .fact-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .fact-icon {
+        background: rgba(14, 165, 233, 0.1);
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .fact-icon svg {
+        color: #0ea5e9;
+    }
+    
+    .fact-content h4 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        color: #334155;
+        font-weight: 600;
+    }
+    
+    .fact-content p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    .alert-success {
+        background-color: #dcfce7;
+        color: #166534;
+        border: none;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .alert-success svg {
+        margin-right: 0.75rem;
+        color: #16a34a;
+        flex-shrink: 0;
+    }
+    
+    @@media (max-width: 992px) {
+        .deposit-body {
+            flex-direction: column;
+        }
+        
+        .deposit-image {
+            padding-left: 0;
+            margin-top: 2rem;
+        }
+        
+        .deposit-form {
+            max-width: none;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<div class="container mt-4">
+    <div class="deposit-container">
+        <div class="deposit-header">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 17V3"></path>
+                    <path d="m6 11 6 6 6-6"></path>
+                    <path d="M19 21H5"></path>
+                </svg>
+                @Localizer["TransferFundsMessage"]
+            </h2>
+            <p>@Localizer["TransferFundsBetweenYourWalletsMessage"]</p>
+        </div>
+        
+        <div class="deposit-body">
+            <div class="deposit-form">
+                <form asp-controller="Member" asp-action="TransferCoin" method="post">
+                    <div class="form-group">
+                        <label class="form-label" asp-for="SelectCoin">@Localizer["SelectSourceMessage"]</label>
+                        <div class="input-group">
+                            <select asp-for="SelectCoin" asp-items="coins" class="form-select" placeholder="Select Source">
+                            </select>
+                        </div>
+                        <span asp-validation-for="SelectCoin" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="RecipientWalletAddress">@Localizer["RecipientAddressMessage"]</label>
+                        <div class="input-group">
+                            <input asp-for="RecipientWalletAddress" class="form-control" placeholder="@Localizer["EnterWalletAddressMessage"]" />
+                        </div>
+                        <span asp-validation-for="RecipientWalletAddress" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Amount">@Localizer["AmountMessage"]</label>
+                        <div class="input-group">
+                            <input asp-for="Amount" class="form-control" placeholder="0.00" />
+                        </div>
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn-transfer" style="display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="18" viewBox="0 0 48 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             style="margin-right: 6px;">
+                            <path d="M12 19V5" />
+                            <polyline points="5 12 12 5 19 12" />
+                            <path d="M36 5v14" />
+                            <polyline points="29 12 36 19 43 12" />
+                        </svg>
+                        @Localizer["TransferFundsMessage"]
+                    </button>
+                </form>
+                
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        @ViewBag.Message
+                    </div>
+                }
+            </div>
+            
+            <div class="deposit-image">
+                <img src="https://img.freepik.com/free-vector/digital-money-transfer-technology_23-2148527124.jpg" alt="Transfer Illustration" />
+            </div>
+        </div>
+    </div>
+    
+    <div class="deposit-facts mb-5">
+        <h3 class="facts-title">@Localizer["TransferBenefitsMessage"]</h3>
+        
+        <div class="facts-grid">
+            <div class="fact-card">
+                <div class="fact-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="fact-content">
+                    <h4>@Localizer["InstantTransfersMessage"]</h4>
+                    <p>@Localizer["AllTransfersBetweenWalletsAreProcessedMessage"]</p>
+                </div>
+            </div>
+            
+            <div class="fact-card">
+                <div class="fact-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="fact-content">
+                    <h4>@Localizer["SecureAndEncryptedMessage"]</h4>
+                    <p>@Localizer["AllTransactionsAreProtectedMessage"]</p>
+                </div>
+            </div>
+            
+            <div class="fact-card">
+                <div class="fact-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </div>
+                <div class="fact-content">
+                    <h4>@Localizer["NoTransactionFeesMessage"]</h4>
+                    <p>@Localizer["EnjoyNoFeesWhenTransferringMessage"]</p>
+                </div>
+            </div>
+            
+            <div class="fact-card">
+                <div class="fact-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="fact-content">
+                    <h4>@Localizer["MultipleRecipientsMessage"]</h4>
+                    <p>@Localizer["TransferToAnyWalletAddressMessage"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animations or any JS functionality here if needed
+    });
+</script>

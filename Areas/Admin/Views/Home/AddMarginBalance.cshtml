@@ -1,0 +1,131 @@
+﻿@{
+
+}
+@model MarginBalancesPageViewModel
+
+<style>
+	.order-table {
+		max-width: 1600px;
+		background-color: #fff;
+		border-radius: 8px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+	}
+
+		.order-table th, .order-table td {
+			padding: 15px;
+			text-align: left;
+		}
+
+		.order-table th {
+			background-color: #f8f9fa;
+		}
+
+		.order-table tbody tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+
+	.table-header {
+		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+		border-bottom: 2px solid #e2e8f0;
+	}
+</style>
+
+<h1>Add Margin Balance</h1>
+
+<div>
+	@if (TempData["AddMarginBalanceSuccessMessage"] != null)
+	{
+		<div class="alert alert-success" role="alert">
+			@TempData["AddMarginBalanceSuccessMessage"]
+		</div>
+	}
+</div>
+
+<div class="row mt-4">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table margin-table align-middle">
+				<thead class="table-header">
+					<tr>
+						<th>User Id</th>
+						<th>Username</th>
+						<th>Margin Balance</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var balance in Model.MarginBalances!)
+					{
+						<tr class="portfolio-row">
+							<td>@balance.UserId</td>
+							<td>@balance.UserName</td>
+							<td>@balance.Balance</td>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm"
+										data-bs-toggle="modal"
+										data-bs-target="#addMarginBalanceModal"
+										data-userid="@balance.UserId">
+									Add Margin Balance
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- Add Margin Balance Modal -->
+<div class="modal fade" id="addMarginBalanceModal" tabindex="-1" aria-labelledby="addMarginBalanceModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<form asp-area="Admin" asp-controller="Home" asp-action="AddMarginBalance" method="post">
+				<div class="alert alert-danger" asp-validation-summary="ModelOnly" role="alert"></div>
+
+				<!-- Gizli alan: seçilen kullanıcının ID'si -->
+				<input type="hidden" id="userId" asp-for="NewUserMarginBalance.UserId" value="" />
+
+				<div class="modal-header">
+					<h5 class="modal-title" id="addBalanceModalLabel">Add Balance</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label asp-for="NewUserMarginBalance.Balance" class="form-label">Balance Amount</label>
+						<input type="number" step="0.01" min="0" class="form-control" id="balanceAmount" asp-for="NewUserMarginBalance.Balance" placeholder="Enter amount" required />
+					</div>
+					<div class="mb-3">
+						<label for="description" class="form-label">Description (optional)</label>
+						<textarea class="form-control" id="description" name="description" rows="3" placeholder="Optional description"></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-success">Add Balance</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		var addBalanceModal = document.getElementById("addMarginBalanceModal");
+
+		addBalanceModal.addEventListener("show.bs.modal", function (event) {
+			var button = event.relatedTarget; // Modalı açan buton
+			var userId = button.getAttribute("data-userid"); // Butondaki userId'yi al
+			console.log("Selected User ID:", userId); // Kontrol için konsola yazdır
+
+			var modalUserIdInput = document.querySelector("#addMarginBalanceModal #userId"); // Modal içindeki input'u seç
+
+			if (modalUserIdInput) {
+				modalUserIdInput.value = userId; // Değeri input'a ata
+				console.log("Modal User ID Input Set:", modalUserIdInput.value);
+			}
+		});
+	});
+
+</script>

@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - CryptoSphere</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/CoinTradeAppMVC.styles.css" asp-append-version="true" />
+
+	<style>
+		/* Özel Stiller */
+		body {
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
+
+		.navbar {
+			background: linear-gradient(45deg, #0f172a, #1e293b) !important;
+			border-bottom: 2px solid #0ea5e9 !important;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+		}
+
+		.navbar-brand {
+			font-family: 'Courier New', monospace;
+			font-weight: 700;
+			background: linear-gradient(45deg, #0ea5e9, #6366f1);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			letter-spacing: 1.5px;
+		}
+
+		.nav-link {
+			color: #94a3b8 !important;
+			position: relative;
+			transition: all 0.3s ease;
+		}
+
+			.nav-link:hover {
+				color: #0ea5e9 !important;
+				transform: translateY(-2px);
+			}
+
+			.nav-link::after {
+				content: '';
+				position: absolute;
+				bottom: -5px;
+				left: 0;
+				width: 0;
+				height: 2px;
+				background: #0ea5e9;
+				transition: width 0.3s ease;
+			}
+
+			.nav-link:hover::after {
+				width: 100%;
+			}
+
+		.navbar-toggler {
+			border-color: rgba(148, 163, 184, 0.3);
+		}
+
+		.navbar-toggler-icon {
+			background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28148, 163, 184, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+		}
+
+		/* Login/Register Butonları */
+		.btn-outline-primary {
+			border-color: #0ea5e9;
+			color: #0ea5e9;
+		}
+
+			.btn-outline-primary:hover {
+				background: #0ea5e9;
+				color: #fff;
+			}
+
+		.btn-gradient {
+			background: linear-gradient(45deg, #0ea5e9, #6366f1);
+			border: none;
+			color: white !important;
+			transition: transform 0.3s ease;
+		}
+
+			.btn-gradient:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+			}
+
+		/* Ana İçerik Ayarları */
+		main {
+			margin-top: 80px;
+			min-height: calc(100vh - 160px);
+		}
+
+		/*Footer kısmı*/
+		.footer {
+			background: linear-gradient(45deg, #0f172a, #1e293b);
+			border-top: 2px solid #0ea5e9 !important;
+			box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+			color: #94a3b8;
+			margin-top:100px;
+		}
+
+		.text-crypto-secondary {
+			color: #64748b !important;
+		}
+
+		.text-crypto-link {
+			color: #94a3b8 !important;
+			text-decoration: none;
+			position: relative;
+			transition: all 0.3s ease;
+		}
+
+			.text-crypto-link:hover {
+				color: #0ea5e9 !important;
+				transform: translateY(-1px);
+			}
+
+			.text-crypto-link::after {
+				content: '';
+				position: absolute;
+				bottom: -2px;
+				left: 0;
+				width: 0;
+				height: 1px;
+				background: #0ea5e9;
+				transition: width 0.3s ease;
+			}
+
+			.text-crypto-link:hover::after {
+				width: 100%;
+			}
+
+		@@media (max-width: 767.98px) {
+			.footer .row {
+				flex-direction: column;
+				text-align: center;
+			}
+
+			.footer .col-md-6:first-child {
+				margin-bottom: 1rem;
+			}
+		}
+
+	</style>
+</head>
+<body class="bg-gray-100 d-flex flex-column min-vh-100">
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+			<div class="container-fluid" style="padding-left: 20px; padding-right: 20px">
+				@if (User.Identity!.IsAuthenticated)
+				{
+					<a class="navbar-brand" asp-area="" asp-controller="Member" asp-action="Index" asp-route-returnUrl="@Context.Request.Query["returnURl"]">CryptoSphere</a>
+				}
+				else
+				{
+					<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Home" asp-route-returnUrl="@Context.Request.Query["returnURl"]">CryptoSphere</a>
+				}
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
+						@if (User.Identity!.IsAuthenticated)
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Member" asp-action="Index">Home</a>
+							</li>
+						}
+						else
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Home">Home</a>
+							</li>
+						}
+
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+						</li>
+
+						@if (User.Identity!.IsAuthenticated)
+						{
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Member" asp-action="UserPortfolio">My Portfolio</a> <!-- Portföy bağlantısı -->
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Member" asp-action="Orders">My Orders</a> <!-- Emirler bağlantısı -->
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Member" asp-action="Margin">Margin</a>	<!-- Kaldıraçlı işlem bağlantısı -->
+							</li>
+						}
+
+					</ul>
+
+					@* Burada _NavbarLogin.cshtml'deki kodu alıyor. *@
+					<partial name="_NavbarLogin" />
+
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+
+	<footer class="footer border-top mt-auto">
+		<div class="container">
+			<div class="row py-4">
+				<div class="col-md-6 text-center text-md-start">
+					<span class="text-crypto-secondary">&copy; 2024 CryptoSphere - All rights reserved</span>
+				</div>
+				<div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+					<a class="text-crypto-link" asp-controller="Home" asp-action="Privacy" style="text-decoration:none">Privacy Policy</a>
+					<span class="text-crypto-secondary mx-2">|</span>
+					<a class="text-crypto-link" href="#" style="text-decoration:none">Terms of Service</a>
+					<span class="text-crypto-secondary mx-2">|</span>
+					<a class="text-crypto-link" asp-controller="Member" asp-action="SendEmailForSupport" style="text-decoration:none">Support</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@* @await RenderSectionAsync("Scripts", required: false) *@
+	@RenderSection("Scripts", required: false)
+</body>
+</html>
