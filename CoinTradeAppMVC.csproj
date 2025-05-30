@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="Resources\ViewModels\UserViewModel.en-US.resx">
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>

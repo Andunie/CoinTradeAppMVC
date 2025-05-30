@@ -160,5 +160,6 @@ app.MapControllerRoute(
 	pattern: "{controller=Member}/{action=Index}/{id?}");
 
 app.MapHub<CoinHub>("/coinhub");
+app.MapHub<AdminHub>("/adminhub");
 
 app.Run();
