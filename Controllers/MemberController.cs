@@ -832,7 +832,6 @@ namespace CoinTradeAppMVC.Controllers
 		[HttpGet("Margin")]
 		public async Task<IActionResult> Margin()
 		{
-			// butonlar aracılığı ile girilen kaldıraçlı işlem oluşturma, düzenleme ve silme için yeni dialoglar oluşturulacaktır. 
 			var currentUser = await _userManager.FindByNameAsync(User.Identity!.Name!);
 
 			if (currentUser == null)
@@ -883,6 +882,7 @@ namespace CoinTradeAppMVC.Controllers
 
 			return View(viewModel);
 		}
+
 		[HttpPost("Margin")]
 		public async Task<IActionResult> Margin(MarginsPageViewModel request)
 		{
@@ -923,7 +923,7 @@ namespace CoinTradeAppMVC.Controllers
 				else
 				// Yeterli bakiyesi varsa
 				{
-					userMarginCash.Balance -= newMargin.OriginalAmount;
+					userMarginCash.Balance -= newMargin.OriginalAmount * coinPrice;
 					
 					_dbContext.UserMarginCash.Update(userMarginCash);
 				}
@@ -987,31 +987,22 @@ namespace CoinTradeAppMVC.Controllers
 			decimal currentPrice = await GetCurrentPrice(margin.Symbol);
 			decimal profitLoss = 0;
 
-			if (margin.IsLongMargin)
-			{
-				// Long işlemde:
-				// OriginalAmount USDT olarak yatırılmış, BorrowAmount ek USDT (veya borçlanma) şeklinde düşünülmüş olsun.
-				// İşlem açılışında, sistem coin miktarına çevirmek için:
-				decimal effectiveCoinAmount = (margin.OriginalAmount + margin.BorrowAmount) / margin.EntryPrice;
-				// Kar/zarar hesaplaması:
-				profitLoss = (currentPrice - margin.EntryPrice) * effectiveCoinAmount;
-				// Kullanıcının kasasına, yatırılan teminat (USDT) ile hesaplanan kar/zarar eklenir.
-				userMarginCash!.Balance += margin.OriginalAmount + profitLoss;
+            if (margin.IsLongMargin)
+            {
+                // Long işlem: (Original + Borrow) USDT ile coin alındı
+                decimal coinAmount = (margin.OriginalAmount + margin.BorrowAmount);
+                profitLoss = (currentPrice - margin.EntryPrice) * coinAmount;
+				userMarginCash.Balance += (currentPrice * margin.OriginalAmount) + profitLoss;
 			}
-			else
-			{
-				// Short işlemde:
-				// OriginalAmount coin miktarı olarak girilmiş; teminat olarak EntryPrice * OriginalAmount USDT çekilmiştir.
-				// Etkili pozisyon, coin cinsinden:
-				decimal effectiveCoinAmount = margin.OriginalAmount + margin.BorrowAmount;
-				// Kar/zarar hesaplaması:
-				profitLoss = (margin.EntryPrice - currentPrice) * effectiveCoinAmount;
-				// Kullanıcının kasasına, short işlem açılışında çekilen teminat (EntryPrice * OriginalAmount) artı kar/zarar eklenir.
-				decimal requiredCollateral = margin.EntryPrice * margin.OriginalAmount;
-				userMarginCash!.Balance += requiredCollateral + profitLoss;
-			}
+            else
+            {
+                // Short işlem: coin satışıyla (Original + Borrow) pozisyon açıldı
+                decimal coinAmount = margin.OriginalAmount + margin.BorrowAmount;
+                profitLoss = (margin.EntryPrice - currentPrice) * coinAmount;
+                userMarginCash.Balance += (margin.OriginalAmount * currentPrice) + profitLoss;
+            }
 
-			await _dbContext.Database.ExecuteSqlRawAsync("EXEC sp_DeleteUserMargin {0}", marginId);
+            await _dbContext.Database.ExecuteSqlRawAsync("EXEC sp_DeleteUserMargin {0}", marginId);
 			await _dbContext.SaveChangesAsync();
 
 			TempData["MarginDeleteSuccessMessage"] = _localizer["MarginHasBeenDeletedSuccessfullyMessage"].Value;
@@ -1224,6 +1215,16 @@ namespace CoinTradeAppMVC.Controllers
 				TempData["ErrorMessage"] = "Hata oluştu" + ex.Message;
                 return View(request);
             }
+        }
+
+        [HttpGet("GetCoinPrice")]
+        public async Task<IActionResult> GetCoinPrice(string symbol)
+        {
+            if (string.IsNullOrEmpty(symbol))
+                return BadRequest("Symbol is required");
+
+            var price = await GetCurrentPrice(symbol);
+            return Ok(price);
         }
 
         private async Task<decimal> GetCurrentPrice(string symbol)
