@@ -21,16 +21,16 @@ CoinTradeAppMVC allows users to:
 
 ## ⚙️ Technologies
 
-| Layer        | Technologies & Tools                                  |
+| Layer        | Technologies & Tools                                   |
 |--------------|--------------------------------------------------------|
 | Backend      | ASP.NET Core MVC (.NET 8.0), Entity Framework Core     |
 | Frontend     | CSS, Bootstrap 5, Chart.js, JavaScript, Chart.JS       |
-| Realtime     | SignalR                                                |
-| Authentication | ASP.NET Core Identity + Email confirmation          |
-| Pattern Detection | Python (FastAPI) + TA-Lib                        |
+| Realtime     | SignalR   (JS)                                         |
+| Authentication | ASP.NET Core Identity + Email confirmation           |
+| Pattern Detection | Python (FastAPI) + TA-Lib (exclude code)          |
 | Database     | MS SQL Server                                          |
 | Others       | Redis (for caching), SMTP (Gmail)                      |
-
+| Binance Spot | For real time cryptocurrency data                      |
 ---
 
 ## 🗂️ Project Structure
