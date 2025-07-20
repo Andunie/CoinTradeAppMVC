@@ -1,7 +1,5 @@
 # CoinTradeAppMVC
 
-# 💹 CoinTradeAppMVC
-
 A crypto trading **simulation platform** built with **ASP.NET Core MVC (.NET 8.0)** that enables users to test cryptocurrency trading strategies using real-time market data without financial risk.
 
 ---
