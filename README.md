@@ -57,7 +57,8 @@ OrderWorkerService/
 
 ## Screenshots :
 
-<img width="1919" height="937" alt="image" src="https://github.com/user-attachments/assets/497b4313-1625-4f62-a0c2-14eb6837b606" />
+<img width="1919" height="937" alt="image" src="https://github.com/user-attachments/assets/cf16828d-f0b3-4f80-98a7-f52e6aa6a94a" />
+
 
 
 
