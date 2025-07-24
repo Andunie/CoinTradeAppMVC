@@ -1,5 +1,3 @@
-<img width="1919" height="937" alt="image" src="https://github.com/user-attachments/assets/3e134029-9f98-42d6-9c80-edc8412c5e4f" /># CoinTradeAppMVC
-
 A crypto trading **simulation platform** built with **ASP.NET Core MVC (.NET 8.0)** that enables users to test cryptocurrency trading strategies using real-time market data without financial risk.
 
 ---
@@ -59,6 +57,7 @@ OrderWorkerService/
 
 ## Screenshots :
 
-<img width="1919" height="937" alt="image" src="https://github.com/user-attachments/assets/d36c906b-e377-4567-9de7-ac54f4fd5b74" />
+<img width="1919" height="937" alt="image" src="https://github.com/user-attachments/assets/497b4313-1625-4f62-a0c2-14eb6837b606" />
+
 
 
