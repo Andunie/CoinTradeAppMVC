@@ -57,7 +57,7 @@ OrderWorkerService/
 
 ## Screenshots :
 
-[[![Screenshot 1](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/main/images/screenshot-2025-07-25-021600.png)](https://github.com/Andunie/CoinTradeAppMVC/blob/6199c51f97c36b470a0f5244d07bdf7d8bdb212d/images/1748710189580.jpg)](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710189580.jpg)
+https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710189580.jpg
 
 ![Screenshot 2](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/main/images/screenshot-2025-07-25-021615.png)
 ![Screenshot 3](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/main/images/screenshot-2025-07-25-021626.png)
