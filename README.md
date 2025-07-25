@@ -56,5 +56,4 @@ OrderWorkerService/
 ├── Worker.cs
 ---
 
-## Screenshots
-<img width="1916" height="1027" alt="Image" src="https://github.com/user-attachments/assets/2e827a1a-a449-4c91-9e2f-1ab857fa34bd" />
+aaa
