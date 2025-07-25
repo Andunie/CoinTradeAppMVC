@@ -1,3 +1,5 @@
+<img width="1916" height="1027" alt="Image" src="https://github.com/user-attachments/assets/2e827a1a-a449-4c91-9e2f-1ab857fa34bd" />
+
 A crypto trading **simulation platform** built with **ASP.NET Core MVC (.NET 8.0)** that enables users to test cryptocurrency trading strategies using real-time market data without financial risk.
 
 ---
