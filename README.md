@@ -54,25 +54,3 @@ CoinTradeAppMVC/
 
 OrderWorkerService/
 ├── Worker.cs
-...
-
----
-
-## 📸 Screenshots
-
-![Screenshot 1](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710189580.jpg)  
-![Screenshot 2](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710189630.jpg)  
-![Screenshot 3](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190188.jpg)  
-![Screenshot 4](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190279.jpg)  
-![Screenshot 5](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190310.jpg)  
-![Screenshot 6](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190312.jpg)  
-![Screenshot 7](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190416.jpg)  
-![Screenshot 8](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190578.jpg)  
-![Screenshot 9](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190596.jpg)  
-![Screenshot 10](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190753.jpg)  
-![Screenshot 11](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190770.jpg)  
-![Screenshot 12](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/1748710190776.jpg)  
-![Screenshot 13](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/screenshot-2025-07-25-021600.png)  
-![Screenshot 14](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/screenshot-2025-07-25-021615.png)  
-![Screenshot 15](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/screenshot-2025-07-25-021626.png)  
-![Screenshot 16](https://raw.githubusercontent.com/Andunie/CoinTradeAppMVC/master/images/screenshot-2025-07-25-022049.png)  
